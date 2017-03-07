@@ -12,7 +12,7 @@ This app is based on the following resources:
 
 Supported flow triggers:
 
-* Power / total power changed
+* Power / total power changed (HS110/HS200)
 * On / off state changed
 
 Supported flow actions:
