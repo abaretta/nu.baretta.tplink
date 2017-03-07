@@ -10,24 +10,25 @@ This app is based on the following resources:
 * https://georgovassilis.blogspot.com/2016/05/controlling-tp-link-hs100-wi-fi-smart.html
 * https://www.softscheck.com/en/reverse-engineering-tp-link-hs110. 
 
+Supported flow triggers:
+
+* Power / total power changed
+* On / off state changed
+
 Supported flow actions:
 
-* switch on / off
-* toggle on / off
-* switch LED on / off
+* Switch on / off
+* Toggle on / off
+* Switch LED on / off
 
 Supported flow controls:
 
-* switch on / off
+* Switch on / off
 
 Mobile capabilities:
 
-* on/off
-* display power and energy usage (HS110/HS200)
-
-# TODO
-
-* use energy monitoring capabilities in flows
+* On/off
+* Display power and energy usage (HS110/HS200)
 
 ##### Donate: #####
 If you like the app you can show your appreciation by posting it in the [forum],
