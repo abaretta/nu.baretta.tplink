@@ -42,7 +42,7 @@ the forum.
 **Version 0.0.1:**
 - Initial version
 
-[forum]: https://forum.athom.com/discussion/
+[forum]: https://forum.athom.com/discussion/2875/submitted-tp-link-hs100-hs110-hs200-app
 [pp-donate-link]: https://www.paypal.me/Baretta
 [pp-donate-image]: https://www.paypalobjects.com/en_US/i/btn/btn_donate_SM.gif
 
