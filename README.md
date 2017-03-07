@@ -39,7 +39,7 @@ the forum.
 - Initial version
 
 [forum]: https://forum.athom.com/discussion/
-[pp-donate-link]: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=
+[pp-donate-link]: https://www.paypal.me/Baretta
 [pp-donate-image]: https://www.paypalobjects.com/en_US/i/btn/btn_donate_SM.gif
 
 
