@@ -4,7 +4,11 @@ This app lets you control a TP Link HS100 (wallplug without energy monitoring), 
 
 In its current state, the app requires that you enter the smartplug's IP address so it is advised to set it up to have a fixed IP address or a 'static lease' from the DHCP server. 
 
-Based on the Hs100 API: https://github.com/plasticrake/hs100-api, https://georgovassilis.blogspot.com/2016/05/controlling-tp-link-hs100-wi-fi-smart.html and https://www.softscheck.com/en/reverse-engineering-tp-link-hs110. 
+This app is based on the following resources:
+
+* Hs100 API https://github.com/plasticrake/hs100-api
+* https://georgovassilis.blogspot.com/2016/05/controlling-tp-link-hs100-wi-fi-smart.html
+* https://www.softscheck.com/en/reverse-engineering-tp-link-hs110. 
 
 Supported flow actions:
 
