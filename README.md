@@ -6,7 +6,7 @@ In its current state, the app requires that you enter the smartplug's IP address
 
 This app is based on the following resources:
 
-* Hs100 API https://github.com/plasticrake/hs100-api
+* The HS100 API: https://github.com/plasticrake/hs100-api
 * https://georgovassilis.blogspot.com/2016/05/controlling-tp-link-hs100-wi-fi-smart.html
 * https://www.softscheck.com/en/reverse-engineering-tp-link-hs110. 
 
