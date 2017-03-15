@@ -40,6 +40,9 @@ the forum.
 
 # Changelog
 
+**Version 0.0.2:**
+- Update 
+
 **Version 0.0.1:**
 - Initial version
 
