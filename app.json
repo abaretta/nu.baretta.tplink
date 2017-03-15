@@ -3,7 +3,7 @@
     "name": {
         "en": "TP Link HS100/HS110/HS200 Smart wall plug"
     },
-    "version": "0.0.1",
+    "version": "0.0.2",
     "compatibility": "1.x",
     "author": {
         "name": "Anne Baretta",
