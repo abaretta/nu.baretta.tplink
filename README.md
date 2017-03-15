@@ -7,7 +7,7 @@ In its current state, the app requires that you enter the smartplug's IP address
 This app is based on the following resources:
 
 * The HS100 API: https://github.com/plasticrake/hs100-api
-* https://georgovassilis.blogspot.com/2016/05/controlling-tp-link-hs100-wi-fi-smart.html
+* https://github.com/ggeorgovassilis/linuxscripts/tree/master/tp-link-hs100-smartplug
 * https://www.softscheck.com/en/reverse-engineering-tp-link-hs110. 
 
 Supported flow triggers:
@@ -19,7 +19,7 @@ Supported flow actions:
 
 * Switch on / off
 * Toggle on / off
-* Switch LED on / off
+* Switch LED on / off ('nightmode')
 
 Supported flow controls:
 
