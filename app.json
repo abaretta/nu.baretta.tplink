@@ -44,18 +44,14 @@
               "small": "drivers/hs100/assets/images/small.jpg"
           },
 	"class": "socket",
-		"capabilities": [ "onoff" ],
+		"capabilities": [ "onoff", "ledonoff" ],
                    "mobile": {
 	           "components": [
 	              {
 		                "id": "icon",
 		                "capabilities": ["onoff"]
-		         }, {
-                                "id": "sensor",
-                                "capabilities": [
-                                "meter_power"
-                                ]
-                        }, {
+		         },
+			 {
                                 "id": "toggle",
                                 "capabilities": [ "onoff" ]
 		        }]
@@ -108,7 +104,7 @@
               "small": "drivers/hs110/assets/images/small.jpg"
           },
 	"class": "socket",
-		"capabilities": [ "onoff", "measure_power", "meter_power", "measure_current", "measure_voltage" ],
+		"capabilities": [ "onoff", "measure_power", "meter_power", "measure_current", "measure_voltage", "ledonoff" ],
                    "mobile": {
 	           "components": [
 	              {
@@ -175,7 +171,7 @@
               "small": "drivers/hs200/assets/images/small.jpg"
           },
 	"class": "socket",
-		"capabilities": [ "onoff", "measure_power", "meter_power", "measure_current", "measure_voltage" ],
+		"capabilities": [ "onoff", "measure_power", "meter_power", "measure_current", "measure_voltage", "ledonoff" ],
                    "mobile": {
 	           "components": [
 	              {
@@ -240,6 +236,54 @@
                 "en": "Turn LED on",
                 "nl": "Zet LED aan"
             },
+        "hint": {
+          "en": "Turn the LED on (turn off 'nightmode').",
+          "nl": "Zet de LED aan (zet 'nachtmode' uit). "
+        },
+            "args": [
+              {
+                "name": "device",
+                "type": "device",
+                "placeholder": {
+                  "en": "Select smartplug",
+                  "nl": "Selecteer smartplug"
+                },
+                "filter": "driver_id=hs100"
+              }
+            ]
+        },
+	{
+            "id": "ledOff",
+            "title": {
+                "en": "Turn LED off",
+                "nl": "Zet LED uit"
+            },
+        "hint": {
+          "en": "Turn the LED off ('nightmode'). Use with care, the power remains on!",
+          "nl": "Zet de LED uit ('nachtmode'). Let op, de stroom blijft ingeschakeld!"
+        },
+            "args": [
+              {
+                "name": "device",
+                "type": "device",
+                "placeholder": {
+                  "en": "Select smartplug",
+                  "nl": "Selecteer smartplug"
+                },
+                "filter": "driver_id=hs100"
+              }
+            ]
+        },
+	{
+            "id": "ledOn",
+            "title": {
+                "en": "Turn LED on",
+                "nl": "Zet LED aan"
+            },
+        "hint": {
+          "en": "Turn the LED on (turn off 'nightmode').",
+          "nl": "Zet de LED aan (zet 'nachtmode' uit). "
+        },
             "args": [
               {
                 "name": "device",
@@ -258,6 +302,10 @@
                 "en": "Turn LED off",
                 "nl": "Zet LED uit"
             },
+        "hint": {
+          "en": "Turn the LED off ('nightmode'). Use with care, the power remains on!",
+          "nl": "Zet de LED uit ('nachtmode'). Let op, de stroom blijft ingeschakeld!"
+        },
             "args": [
               {
                 "name": "device",
@@ -269,7 +317,123 @@
                 "filter": "driver_id=hs110"
               }
             ]
-        }
+        },
+	{
+        "id": "meter_reset",
+        "title": {
+          "en": "Reset meter values",
+          "nl": "Meter waarden resetten"
+        },
+        "hint": {
+          "en": "Reset the accumulated power usage (kWh). Can be reversed with the next action card.",
+          "nl": "Reset de stroomverbruik (kWh) waarden. Kan ongedaan gemaakt worden met de volgende kaart."
+        },
+        "args": [
+          {
+            "name": "device",
+            "type": "device",
+            "filter": "driver_id=hs110"
+          }
+        ]
+	},
+	{
+        "id": "undo_meter_reset",
+        "title": {
+          "en": "Undo reset meter values",
+          "nl": "Ongedaan maken meter resetten"
+        },
+        "hint": {
+          "en": "Undo resetting the accumulated power usage (kWh).",
+          "nl": "Maak reset van stroomverbruik ongedaan."
+        },
+        "args": [
+          {
+            "name": "device",
+            "type": "device",
+            "filter": "driver_id=hs110"
+          }
+        ]
+	},
+	{
+            "id": "ledOn",
+            "title": {
+                "en": "Turn LED on",
+                "nl": "Zet LED aan"
+            },
+        "hint": {
+          "en": "Turn the LED on (turn off 'nightmode').",
+          "nl": "Zet de LED aan (zet 'nachtmode' uit). "
+        },
+            "args": [
+              {
+                "name": "device",
+                "type": "device",
+                "placeholder": {
+                  "en": "Select smartplug",
+                  "nl": "Selecteer smartplug"
+                },
+                "filter": "driver_id=hs200"
+              }
+            ]
+        },
+	{
+            "id": "ledOff",
+            "title": {
+                "en": "Turn LED off",
+                "nl": "Zet LED uit"
+            },
+        "hint": {
+          "en": "Turn the LED off ('nightmode'). Use with care, the power remains on!",
+          "nl": "Zet de LED uit ('nachtmode'). Let op, de stroom blijft ingeschakeld!"
+        },
+            "args": [
+              {
+                "name": "device",
+                "type": "device",
+                "placeholder": {
+                  "en": "Select smartplug",
+                  "nl": "Selecteer smartplug"
+                },
+                "filter": "driver_id=hs200"
+              }
+            ]
+        },
+	{
+        "id": "meter_reset",
+        "title": {
+          "en": "Reset meter values",
+          "nl": "Meter waarden resetten"
+        },
+        "hint": {
+          "en": "Reset the accumulated power usage (kWh). Can be reversed with the next action card.",
+          "nl": "Reset de stroomverbruik (kWh) waarden. Kan ongedaan gemaakt worden met de volgende kaart."
+        },
+        "args": [
+          {
+            "name": "device",
+            "type": "device",
+            "filter": "driver_id=hs200"
+          }
+        ]
+	},
+	{
+        "id": "undo_meter_reset",
+        "title": {
+          "en": "Undo reset meter values",
+          "nl": "Ongedaan maken meter resetten"
+        },
+        "hint": {
+          "en": "Undo resetting the accumulated power usage (kWh).",
+          "nl": "Maak reset van stroomverbruik ongedaan."
+        },
+        "args": [
+          {
+            "name": "device",
+            "type": "device",
+            "filter": "driver_id=hs200"
+          }
+        ]
+	}
 	]
     }
 }
