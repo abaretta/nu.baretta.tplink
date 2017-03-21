@@ -15,20 +15,24 @@ Supported flow triggers:
 * Power / total power changed (HS110/HS200)
 * On / off state changed
 
+Supported flow conditions:
+
+* If on / off
+
 Supported flow actions:
 
 * Switch on / off
 * Toggle on / off
 * Switch LED on / off ('nightmode')
-
-Supported flow controls:
-
-* Switch on / off
+* reset power meter / undo reset power meter (HS110/HS200)
 
 Mobile capabilities:
 
 * On/off
 * Display power and energy usage (HS110/HS200)
+
+![](https://drive.google.com/uc?id=0B4QdLfQ7j41Jc3daMm9xSmsyUjg)
+![](https://drive.google.com/uc?id=0B4QdLfQ7j41JY3N5Y2JNRWZRVmM)
 
 ##### Donate: #####
 If you like the app you can show your appreciation by posting it in the [forum],
@@ -41,7 +45,7 @@ the forum.
 # Changelog
 
 **Version 0.0.2:**
-- Update 
+- Bugfixes, added capabilities
 
 **Version 0.0.1:**
 - Initial version
@@ -49,5 +53,4 @@ the forum.
 [forum]: https://forum.athom.com/discussion/2875/submitted-tp-link-hs100-hs110-hs200-app
 [pp-donate-link]: https://www.paypal.me/Baretta
 [pp-donate-image]: https://www.paypalobjects.com/en_US/i/btn/btn_donate_SM.gif
-
 
