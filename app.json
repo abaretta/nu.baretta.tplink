@@ -244,10 +244,6 @@
               {
                 "name": "device",
                 "type": "device",
-                "placeholder": {
-                  "en": "Select smartplug",
-                  "nl": "Selecteer smartplug"
-                },
                 "filter": "driver_id=hs100"
               }
             ]
@@ -266,10 +262,6 @@
               {
                 "name": "device",
                 "type": "device",
-                "placeholder": {
-                  "en": "Select smartplug",
-                  "nl": "Selecteer smartplug"
-                },
                 "filter": "driver_id=hs100"
               }
             ]
@@ -288,10 +280,6 @@
               {
                 "name": "device",
                 "type": "device",
-                "placeholder": {
-                  "en": "Select smartplug",
-                  "nl": "Selecteer smartplug"
-                },
                 "filter": "driver_id=hs110"
               }
             ]
@@ -310,10 +298,6 @@
               {
                 "name": "device",
                 "type": "device",
-                "placeholder": {
-                  "en": "Select smartplug",
-                  "nl": "Selecteer smartplug"
-                },
                 "filter": "driver_id=hs110"
               }
             ]
@@ -368,10 +352,6 @@
               {
                 "name": "device",
                 "type": "device",
-                "placeholder": {
-                  "en": "Select smartplug",
-                  "nl": "Selecteer smartplug"
-                },
                 "filter": "driver_id=hs200"
               }
             ]
@@ -390,10 +370,6 @@
               {
                 "name": "device",
                 "type": "device",
-                "placeholder": {
-                  "en": "Select smartplug",
-                  "nl": "Selecteer smartplug"
-                },
                 "filter": "driver_id=hs200"
               }
             ]
