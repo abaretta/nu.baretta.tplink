@@ -44,6 +44,9 @@ the forum.
 
 # Changelog
 
+**Version 0.0.3:**
+- Bugfixes, added autodiscovery feature
+
 **Version 0.0.2:**
 - Bugfixes, added capabilities
 
