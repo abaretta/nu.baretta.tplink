@@ -73,7 +73,7 @@ module.exports.pair = function(socket) {
                 // check if the discovered model matches the driver
                 if (plug.model.match(myRegEx)) {
                     Homey.log("TP Link smartplug app - host: " + plug.host + " model " + plug.model + " name " + plug.name + " mac " + plug.mac);
-                        var data = {
+                    var data = {
                         id: plug.host,
                         name: plug.name
                     }
