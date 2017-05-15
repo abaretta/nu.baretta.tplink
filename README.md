@@ -44,6 +44,9 @@ the forum.
 
 # Changelog
 
+**Version 0.0.4:**
+- Bugfixes. Added check on model type in autodiscovery. Autodiscovery can now detect both new and existing plugs (in case 
+
 **Version 0.0.3:**
 - Bugfixes, added autodiscovery feature
 
