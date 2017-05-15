@@ -44,6 +44,9 @@ the forum.
 
 # Changelog
 
+**Version 0.0.4:**
+- Bugfixes (added check on model type)
+
 **Version 0.0.3:**
 - Bugfixes, added autodiscovery feature
 
