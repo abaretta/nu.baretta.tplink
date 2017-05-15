@@ -1,9 +1,9 @@
 {
     "id": "nu.baretta.tplink",
     "name": {
-        "en": "TP Link HS100/HS110/HS200 Smart wall plug"
+        "en": "TP-Link HS100/HS110/HS200 Smart wall plug"
     },
-    "version": "0.0.3",
+    "version": "0.0.4",
     "compatibility": "1.x",
     "author": {
         "name": "Anne Baretta",
@@ -15,8 +15,8 @@
     },
     "category": "appliances",
     "description": {
-      "en": "TP Link HS100/HS110/HS200 Smart wall plug app for Homey",
-      "nl": "TP Link HS100/HS110/HS200 Smart wall plug app voor Homey"
+      "en": "TP-Link HS100/HS110/HS200 Smart wall plug app for Homey",
+      "nl": "TP-Link HS100/HS110/HS200 Smart wall plug app voor Homey"
     },
     "dependencies": {
     		"net": "*"
