@@ -45,6 +45,9 @@ the forum.
 # Changelog
 
 **Version 0.0.4:**
+- Added support for TP-Link light bulbs LB100, LB110, LB120 and LB130
+
+**Version 0.0.4:**
 - Bugfixes. Added check on model type in autodiscovery. Autodiscovery can now detect both new and existing plugs (in case 
 
 **Version 0.0.3:**

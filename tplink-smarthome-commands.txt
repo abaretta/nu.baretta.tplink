@@ -184,3 +184,52 @@ Delete Anti-Theft Rule with given ID
 
 Delete All Anti-Theft Rules
 "anti_theft":{"delete_all_rules":null}}
+
+Light-bulb commands (LB100, LB110, LB120, LB130)
+
+Get Energy Monitor Functions
+getDailyEnergy (month, year)
+getMonthlyEnergy (year)
+Get Schedule/Timer Functions
+getSchedule ()
+getNextSchedAction ()
+getTimerRules ()
+getAntiTheft ()
+
+Get Light Data Functions
+getLightState ()
+getLightParameters ()
+getLightDetails ()
+getLightWattage ()
+
+Get Bulb Data Functions
+getSysInfo ()
+getAlias ()
+getModel ()
+getMACAddress ()
+getCloudInfo ()
+
+Set Light Functions
+setLightOnWithTrans (power, transition)
+setLightState (lightState, stateValue)
+setLightColor (hue, saturation) 
+
+on/off
+brightness
+colortemp
+bulbColor
+
+{"get_light_state":{}}
+{"smartlife.iot.smartbulb.lightingservice":{"get_light_state":{}}}
+{"smartlife.iot.smartbulb.lightingservice":{"get_light_parameters":{}}}
+{"get_light_parameters":{}}
+{"smartlife.iot.smartbulb.lightingservice":{"get_light_details":{}}}
+{"smartlife.iot.common.emeter":{"get_realtime":{}}}'
+{"smartlife.iot.smartbulb.lightingservice":{"get_preferred_state":{}}}
+{"smartlife.iot.smartbulb.lightingservice":{"get_default_behavior":{}}}
+{"smartlife.iot.smartbulb.lightingservice":{"get_opts":{}}}
+{"smartlife.iot.common.cloud":{"get_info":{}}}
+{"smartlife.iot.smartbulb.lightingservice": {"transition_light_state": {"on_off":${(power ? 1 : 0)},"transition_period":${transition}}}}
+{"smartlife.iot.smartbulb.lightingservice": {"transition_light_state": {${lightState}:${stateValue}}}
+{"smartlife.iot.smartbulb.lightingservice": {"transition_light_state": {"color_temp": 0,"hue":${hue},"saturation":${saturation}}}}
+		
