@@ -1,14 +1,15 @@
 # TP Link HS100/HS110/HS200 IP control app for Athom Homey
 
-This app lets you control a TP Link HS100 (wallplug without energy monitoring), HS110 (wallplug with energy monitoring) and the HS200 wall switch (with energy monitoring) from within flows on a Homey device (by Athom). Homey is NodeJS based and allows for apps to extend its functionality.
+This app lets you control TP-Link Smart Plugs HS1009 (plug with no energy monitoring) HS110 (plug with energy monitoring) and Smart Bulbs LB100, LB110, LB120 and LB130 from within flows and the (mobile) app. The HS200 Smart Switch is as of yet untested but should work as well (please let me know ;-) The same goes for the HS115 mini plug, this should work with the HS110 driver.
 
-In its current state, the app requires that you enter the smartplug's IP address so it is advised to set it up to have a fixed IP address or a 'static lease' from the DHCP server. 
+In its current state, the app can auto-detect the IP address of the device, however it currently cannot detect when it is changed. It is advised to set it up to have a fixed IP address or a 'static lease' from the DHCP server until this feature is added. 
 
 This app is based on the following resources:
 
 * The HS100 API: https://github.com/plasticrake/hs100-api
 * https://github.com/ggeorgovassilis/linuxscripts/tree/master/tp-link-hs100-smartplug
-* https://www.softscheck.com/en/reverse-engineering-tp-link-hs110. 
+* https://www.softscheck.com/en/reverse-engineering-tp-link-hs110 
+* https://github.com/DaveGut/TP-Link-Bulbs  
 
 Supported flow triggers:
 
@@ -30,9 +31,15 @@ Mobile capabilities:
 
 * On/off
 * Display power and energy usage (HS110/HS200)
+* Dim (LB100/LB110/LB120/LB130
+* Set light temperature (LB120/LB130)
+* Set hue (LB130)
+* Select mode (LB130)
+* Select preset (LB130) 
 
 ![](https://drive.google.com/uc?id=0B4QdLfQ7j41Jc3daMm9xSmsyUjg)
 ![](https://drive.google.com/uc?id=0B4QdLfQ7j41JY3N5Y2JNRWZRVmM)
+![](https://drive.google.com/uc?id=0B4QdLfQ7j41Jbmd3eGpPVWQxa1k)
 
 ##### Donate: #####
 If you like the app you can show your appreciation by posting it in the [forum],
@@ -44,7 +51,7 @@ the forum.
 
 # Changelog
 
-**Version 0.0.4:**
+**Version 0.0.5:**
 - Added support for TP-Link light bulbs LB100, LB110, LB120 and LB130
 
 **Version 0.0.4:**
