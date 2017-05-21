@@ -1,0 +1,115 @@
+<script>
+
+Homey.setTitle( __('pair.start.title') );
+
+Homey.on('error', function( errortype, callback ){
+
+	if (errortype == 'error') {
+		Homey.alert(__('pair.start.error'), 'error');
+		Homey.done();
+	}
+
+	if (errortype == 'nosettings') {
+		Homey.alert(__('pair.start.nosettings'), 'error');
+		Homey.done();
+	}
+})
+
+Homey.on('continue', function( success, callback ){
+		Homey.showView('list_devices');
+})
+
+$('#startdiscovery').on('click', function() {
+        
+        document.getElementById('discovery').style.display = 'block';
+        
+        Homey.emit('discover', {}, function (err, result) {
+                
+                console.log('result');
+                
+        });
+});
+
+Homey.on('found', function(data) {
+        
+        if (data.id) {
+                $('#ipAddress').val(data.id);
+                $('#deviceName').val(data.name);
+        }
+        
+});
+
+function saveSettings () {
+
+	// variables
+	var inputIPAddress = document.getElementById( 'ipAddress' ).value;
+	var inputDeviceName = document.getElementById( 'deviceName' ).value;
+
+	// If required values are filled in
+	// FIXME: should check if this is a real IPv4 address
+
+	if (inputIPAddress != '') {
+
+		// Build data array
+		var data = {
+			ipaddress: inputIPAddress,
+			deviceName: inputDeviceName
+		};
+
+		// Continue to back-end, pass along data
+		Homey.emit( 'get_devices', data );
+
+	} else {
+
+		// Give error, required values
+		Homey.alert(__('pair.start.required'), 'error');
+		// Homey.done() closes the pairing window
+		Homey.done();
+
+	}
+
+}
+
+</script>
+
+        <div id="discovery" style="display: none">
+                <p data-i18n="pair.start.discovery"></p>
+        </div>
+        <div id="manualpair">
+
+
+    <p data-i18n="pair.start.intro">enter IP address and name</p>
+    <p>
+                <button class="button" id="startdiscovery" data-i18n="pair.start.startdiscovery">Start discovery</button>
+
+		<style>
+			.pairSettings {
+				font-size:16px;
+				border:none;
+			}
+
+			input {
+				font-size:16px;
+			}
+
+		</style>
+
+		<table class="pairSettings">
+			<tr>
+				<td style="width:100px;" data-i18n="pair.start.ipAddress">IP</td>
+				<td><input id="ipAddress" type="text" value="" placeholder="192.168.1.10"/></td>
+			</tr>
+			<tr>
+				<td style="width:100px;" data-i18n="pair.start.deviceName">Name</td>
+				<td><input id="deviceName" type="text" value="" placeholder="TP Link Plug"/></td>
+			</tr>
+		</table>
+
+		<p>
+		&nbsp;
+	  </p>
+
+<fieldset>
+    <button class="button" data-i18n="pair.start.saveSettings" onclick="saveSettings()">Save</button>
+</fieldset>
+</div>
