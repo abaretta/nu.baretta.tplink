@@ -5,7 +5,7 @@ var net = require('net');
 
 //const Hs100Api = require('../../node_modules/hs100-api');
 const Hs100Api = require('hs100-api');
-var TPlinkModel = 'HS200';
+var TPlinkModel = getDriverName().toUpperCase();
 var myRegEx = new RegExp(TPlinkModel, 'g');
 
 // Temporarily store the device's IP address and name. For later use, it gets added to the device's settings
@@ -35,6 +35,7 @@ var logEvent = function(eventName, plug) {
 module.exports.init = function(devices_data, callback) {
     devices_data.forEach(function(device_data) {
             Homey.log('TP Link smartplug app - init device: ' + JSON.stringify(device_data));
+            Homey.log('TP Link smartplug app - model: ' + TPlinkModel);
             initDevice(device_data);
 
         })
@@ -548,4 +549,11 @@ function initDevice(device_data) {
     Homey.log('TP Link smartplug app - plug IP: ' + device_data.id);
     //    getStatus(device_data);
 }
+
+// get driver name based on dirname (hs100, hs110, etc.)
+function getDriverName() {
+    var parts = __dirname.replace(/\\/g, '/').split('/');
+    return parts[parts.length - 1].split('.')[0];
+}
+
 

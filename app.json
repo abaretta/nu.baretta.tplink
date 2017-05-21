@@ -3,7 +3,7 @@
     "name": {
         "en": "TP-Link HS100/HS110/HS200 Smart wall plug"
     },
-    "version": "0.0.4",
+    "version": "0.0.5",
     "compatibility": "1.x",
     "author": {
         "name": "Anne Baretta",
@@ -190,6 +190,202 @@
                                 "capabilities": [ "onoff" ]
 		        }]
           },
+          "pair": [
+            {
+              "id": "start"
+            },
+            {
+              "id": "list_devices",
+              "template": "list_devices",
+              "navigation": {
+                  "next": "add_plugs"
+              }
+            },
+            {
+              "id": "add_plugs",
+              "template": "add_devices"
+            }
+          ],
+          "settings": [
+            {
+              "type": "group",
+                      "label": {
+                          "en": "General settings",
+                          "nl": "Algemene instellingen"
+                      },
+                      "children": [
+                          {
+                              "id": "settingIPAddress",
+                              "type": "text",
+                              "label": {
+                                  "en": "IP address",
+                                  "nl": "IP adres"
+                              },
+                              "value": "0.0.0.0"
+                          }
+                      ]
+            }
+          ]
+      },
+      {
+          "id": "lb100",
+          "name": {
+              "en": "LB100",
+              "nl": "LB100"
+          },
+          "images": {
+              "large": "drivers/lb100/assets/images/large.jpg",
+              "small": "drivers/lb100/assets/images/small.jpg"
+          },
+	"class": "light",
+		"capabilities": [ "onoff", "measure_power", "meter_power", "dim", "light_mode" ],
+          "pair": [
+            {
+              "id": "start"
+            },
+            {
+              "id": "list_devices",
+              "template": "list_devices",
+              "navigation": {
+                  "next": "add_plugs"
+              }
+            },
+            {
+              "id": "add_plugs",
+              "template": "add_devices"
+            }
+          ],
+          "settings": [
+            {
+              "type": "group",
+                      "label": {
+                          "en": "General settings",
+                          "nl": "Algemene instellingen"
+                      },
+                      "children": [
+                          {
+                              "id": "settingIPAddress",
+                              "type": "text",
+                              "label": {
+                                  "en": "IP address",
+                                  "nl": "IP adres"
+                              },
+                              "value": "0.0.0.0"
+                          }
+                      ]
+            }
+          ]
+      },
+      {
+          "id": "lb110",
+          "name": {
+              "en": "LB110",
+              "nl": "LB110"
+          },
+          "images": {
+              "large": "drivers/lb110/assets/images/large.jpg",
+              "small": "drivers/lb110/assets/images/small.jpg"
+          },
+	"class": "light",
+		"capabilities": [ "onoff", "measure_power", "meter_power", "dim", "light_mode" ],
+          "pair": [
+            {
+              "id": "start"
+            },
+            {
+              "id": "list_devices",
+              "template": "list_devices",
+              "navigation": {
+                  "next": "add_plugs"
+              }
+            },
+            {
+              "id": "add_plugs",
+              "template": "add_devices"
+            }
+          ],
+          "settings": [
+            {
+              "type": "group",
+                      "label": {
+                          "en": "General settings",
+                          "nl": "Algemene instellingen"
+                      },
+                      "children": [
+                          {
+                              "id": "settingIPAddress",
+                              "type": "text",
+                              "label": {
+                                  "en": "IP address",
+                                  "nl": "IP adres"
+                              },
+                              "value": "0.0.0.0"
+                          }
+                      ]
+            }
+          ]
+      },
+      {
+          "id": "lb120",
+          "name": {
+              "en": "LB120",
+              "nl": "LB120"
+          },
+          "images": {
+              "large": "drivers/lb120/assets/images/large.jpg",
+              "small": "drivers/lb120/assets/images/small.jpg"
+          },
+	"class": "light",
+		"capabilities": [ "onoff", "measure_power", "meter_power", "dim", "light_saturation","light_mode","light_temperature" ],
+          "pair": [
+            {
+              "id": "start"
+            },
+            {
+              "id": "list_devices",
+              "template": "list_devices",
+              "navigation": {
+                  "next": "add_plugs"
+              }
+            },
+            {
+              "id": "add_plugs",
+              "template": "add_devices"
+            }
+          ],
+          "settings": [
+            {
+              "type": "group",
+                      "label": {
+                          "en": "General settings",
+                          "nl": "Algemene instellingen"
+                      },
+                      "children": [
+                          {
+                              "id": "settingIPAddress",
+                              "type": "text",
+                              "label": {
+                                  "en": "IP address",
+                                  "nl": "IP adres"
+                              },
+                              "value": "0.0.0.0"
+                          }
+                      ]
+            }
+          ]
+      },
+      {
+          "id": "lb130",
+          "name": {
+              "en": "LB130",
+              "nl": "LB130"
+          },
+          "images": {
+              "large": "drivers/lb130/assets/images/large.jpg",
+              "small": "drivers/lb130/assets/images/small.jpg"
+          },
+	"class": "light",
+		"capabilities": [ "onoff", "dim", "light_hue", "light_saturation","light_mode","light_temperature" ],
           "pair": [
             {
               "id": "start"
