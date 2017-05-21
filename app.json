@@ -3,8 +3,12 @@
     "name": {
         "en": "TP-Link HS100/HS110/HS200 Smart wall plug"
     },
+    "tags": {
+        "en": [ "HS100","HS110","HS200","LB100","LB110","LB120","LB130" ],
+        "nl": [ "HS100","HS110","HS200","LB100","LB110","LB120","LB130" ]
+    },
     "version": "0.0.5",
-    "compatibility": "1.x",
+    "compatibility": ">=1.2.0",
     "author": {
         "name": "Anne Baretta",
         "email": "dev@baretta.nu"
@@ -15,8 +19,8 @@
     },
     "category": "appliances",
     "description": {
-      "en": "TP-Link HS100/HS110/HS200 Smart wall plug app for Homey",
-      "nl": "TP-Link HS100/HS110/HS200 Smart wall plug app voor Homey"
+      "en": "TP-Link Smart Plugs and Bulbs (WIFI)",
+      "nl": "TP-Link Smart Plugs en Lampen (WIFI)"
     },
     "dependencies": {
     		"net": "*"
