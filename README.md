@@ -1,6 +1,6 @@
-# TP Link HS100/HS110/HS200 IP control app for Athom Homey
+# TP-Link Smart Plug and Bulb (WIFI) app for Athom Homey
 
-This app lets you control TP-Link Smart Plugs HS1009 (plug with no energy monitoring) HS110 (plug with energy monitoring) and Smart Bulbs LB100, LB110, LB120 and LB130 from within flows and the (mobile) app. The HS200 Smart Switch is as of yet untested but should work as well (please let me know ;-) The same goes for the HS115 mini plug, this should work with the HS110 driver.
+This app lets you control TP-Link Smart Plugs HS100 (plug with no energy monitoring) HS110 (plug with energy monitoring) and Smart Bulbs LB100, LB110, LB120 and LB130 from within flows and the (mobile) app. The HS200 Smart Switch is as of yet untested but should work as well (please let me know ;-) The same goes for the HS115 mini plug, this should work with the HS110 driver.
 
 In its current state, the app can auto-detect the IP address of the device, however it currently cannot detect when it is changed. It is advised to set it up to have a fixed IP address or a 'static lease' from the DHCP server until this feature is added. 
 
@@ -36,6 +36,8 @@ Mobile capabilities:
 * Set hue (LB130)
 * Select mode (LB130)
 * Select preset (LB130) 
+
+Energy monitoring has currently not been implemented for the bulbs (LB110 and up) as I am not sure anyone would use it.
 
 ![](https://drive.google.com/uc?id=0B4QdLfQ7j41Jc3daMm9xSmsyUjg)
 ![](https://drive.google.com/uc?id=0B4QdLfQ7j41JY3N5Y2JNRWZRVmM)
