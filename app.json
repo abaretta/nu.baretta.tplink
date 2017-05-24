@@ -609,7 +609,260 @@
             "filter": "driver_id=hs200"
           }
         ]
-	}
+	}, {
+                        "id": "transitionOn",
+                        "title": {
+                                "en": "Turn bulb on with a transition in brightness.",
+                                "nl": "Aan, geleidelijke toename van helderheid."
+                        },
+       "hint": {
+          "en": "Turn the bulb on with a transistion in brightness over the entered number of seconds.",
+          "nl": "Schakel de lamp aan met een geleidelijke toename van de helderheid over het opgegeven aantal seconden."
+        },
+                        "args": [{
+                                "name": "device",
+                                "type": "device",
+                                "filter": "driver_id=lb100"
+                        }, {
+                                "name": "transition",
+                                "type": "number",
+                                "min": 1,
+                                "max": 3600,
+                                "placeholder": {
+                                        "en": "Transition time in seconds",
+                                        "nl": "Overgangstijd in seconden"
+                                }
+                        }]
+                },{
+                        "id": "transitionOff",
+                        "title": {
+                                "en": "Turn bulb off with a transition in brightness.",
+                                "nl": "Uit, geleidelijke afname van helderheid."
+                        },
+       "hint": {
+          "en": "Turn the bulb off with a transistion in brightness over the entered number of seconds.",
+          "nl": "Schakel de lamp uit met een geleidelijke afname van de helderheid over het opgegeven aantal seconden."
+        },
+                        "args": [{
+                                "name": "device",
+                                "type": "device",
+                                "filter": "driver_id=lb100"
+                        }, {
+                                "name": "transition",
+                                "type": "number",
+                                "min": 1,
+                                "max": 3600,
+                                "placeholder": {
+                                        "en": "Transition time in seconds",
+                                        "nl": "Overgangstijd in seconden"
+                                }
+                        }]
+                }, {
+                        "id": "transitionOn",
+                        "title": {
+                                "en": "Turn bulb on with a transition in brightness.",
+                                "nl": "Aan, geleidelijke toename van helderheid."
+                        },
+       "hint": {
+          "en": "Turn the bulb on with a transistion in brightness over the entered number of seconds.",
+          "nl": "Schakel de lamp aan met een geleidelijke toename van de helderheid over het opgegeven aantal seconden."
+        },
+                        "args": [{
+                                "name": "device",
+                                "type": "device",
+                                "filter": "driver_id=lb110"
+                        }, {
+                                "name": "transition",
+                                "type": "number",
+                                "min": 1,
+                                "max": 3600,
+                                "placeholder": {
+                                        "en": "Transition time in seconds",
+                                        "nl": "Overgangstijd in seconden"
+                                }
+                        }]
+                },{
+                        "id": "transitionOff",
+                        "title": {
+                                "en": "Turn bulb off with a transition in brightness.",
+                                "nl": "Uit, geleidelijke afname van helderheid."
+                        },
+       "hint": {
+          "en": "Turn the bulb off with a transistion in brightness over the entered number of seconds.",
+          "nl": "Schakel de lamp uit met een geleidelijke afname van de helderheid over het opgegeven aantal seconden."
+        },
+                        "args": [{
+                                "name": "device",
+                                "type": "device",
+                                "filter": "driver_id=lb110"
+                        }, {
+                                "name": "transition",
+                                "type": "number",
+                                "min": 1,
+                                "max": 3600,
+                                "placeholder": {
+                                        "en": "Transition time in seconds",
+                                        "nl": "Overgangstijd in seconden"
+                                }
+                        }]
+                },{
+                        "id": "circadianModeOn",
+                        "title": {
+                                "en": "Enable circadian mode",
+                                "nl": "Zet circadian mode aan"
+                        },
+        "hint": {
+          "en": "Enable circadian mode. In this mode the color of the bulb automatically changes during the day.",
+          "nl": "Zet de circadian mode aan. In deze mode veranderd de lamp van kleur in de loop van de dag."
+        },
+                        "args": [{
+                                "name": "device",
+                                "type": "device",
+                                "filter": "driver_id=lb120"
+                        }]
+                },{
+                        "id": "circadianModeOff",
+                        "title": {
+                                "en": "Enable normal mode",
+                                "nl": "Zet normale mode aan"
+                        },
+        "hint": {
+          "en": "Disable circadian mode and set the bulb to normal mode, it will keep the current colorsetting.",
+          "nl": "Zet de circadian mode uit en zet de lamp in de normale modus, de lamp behoudt dezelfde kleureninstelling."
+        },
+                        "args": [{
+                                "name": "device",
+                                "type": "device",
+                                "filter": "driver_id=lb120"
+                        }]
+                },{
+                        "id": "transitionOn",
+                        "title": {
+                                "en": "Turn bulb on with a transition in brightness.",
+                                "nl": "Aan, geleidelijke toename van helderheid."
+                        },
+       "hint": {
+          "en": "Turn the bulb on with a transistion in brightness over the entered number of seconds.",
+          "nl": "Schakel de lamp aan met een geleidelijke toename van de helderheid over het opgegeven aantal seconden."
+        },
+                        "args": [{
+                                "name": "device",
+                                "type": "device",
+                                "filter": "driver_id=lb120"
+                        }, {
+                                "name": "transition",
+                                "type": "number",
+                                "min": 1,
+                                "max": 3600,
+                                "placeholder": {
+                                        "en": "Transition time in seconds",
+                                        "nl": "Overgangstijd in seconden"
+                                }
+                        }]
+                },{
+                        "id": "transitionOff",
+                        "title": {
+                                "en": "Turn bulb off with a transition in brightness.",
+                                "nl": "Uit, geleidelijke afname van helderheid."
+                        },
+       "hint": {
+          "en": "Turn the bulb off with a transistion in brightness over the entered number of seconds.",
+          "nl": "Schakel de lamp uit met een geleidelijke afname van de helderheid over het opgegeven aantal seconden."
+        },
+                        "args": [{
+                                "name": "device",
+                                "type": "device",
+                                "filter": "driver_id=lb120"
+                        }, {
+                                "name": "transition",
+                                "type": "number",
+                                "min": 1,
+                                "max": 3600,
+                                "placeholder": {
+                                        "en": "Transition time in seconds",
+                                        "nl": "Overgangstijd in seconden"
+                                }
+                        }]
+                },{
+                        "id": "circadianModeOn",
+                        "title": {
+                                "en": "Enable circadian mode",
+                                "nl": "Zet circadian mode aan"
+                        },
+        "hint": {
+          "en": "Enable circadian mode. In this mode the color of the bulb automatically changes during the day.",
+          "nl": "Zet de circadian mode aan. In deze mode veranderd de lamp van kleur in de loop van de dag."
+        },
+                        "args": [{
+                                "name": "device",
+                                "type": "device",
+                                "filter": "driver_id=lb130"
+                        }]
+                },{
+                        "id": "circadianModeOff",
+                        "title": {
+                                "en": "Enable normal mode",
+                                "nl": "Zet normale mode aan"
+                        },
+        "hint": {
+          "en": "Disable circadian mode and set the bulb to normal mode, it will keep the current colorsetting.",
+          "nl": "Zet de circadian mode uit en zet de lamp in de normale modus, de lamp behoudt dezelfde kleureninstelling."
+        },
+                        "args": [{
+                                "name": "device",
+                                "type": "device",
+                                "filter": "driver_id=lb130"
+                        }]
+                },{
+                        "id": "transitionOn",
+                        "title": {
+                                "en": "Turn bulb on with a transition in brightness.",
+                                "nl": "Aan, geleidelijke toename van helderheid."
+                        },
+       "hint": {
+          "en": "Turn the bulb on with a transistion in brightness over the entered number of seconds.",
+          "nl": "Schakel de lamp aan met een geleidelijke toename van de helderheid over het opgegeven aantal seconden."
+        },
+                        "args": [{
+                                "name": "device",
+                                "type": "device",
+                                "filter": "driver_id=lb130"
+                        }, {
+                                "name": "transition",
+                                "type": "number",
+                                "min": 1,
+                                "max": 3600,
+                                "placeholder": {
+                                        "en": "Transition time in seconds",
+                                        "nl": "Overgangstijd in seconden"
+                                }
+                        }]
+                },{
+                        "id": "transitionOff",
+                        "title": {
+                                "en": "Turn bulb off with a transition in brightness.",
+                                "nl": "Uit, geleidelijke afname van helderheid."
+                        },
+       "hint": {
+          "en": "Turn the bulb off with a transistion in brightness over the entered number of seconds.",
+          "nl": "Schakel de lamp uit met een geleidelijke afname van de helderheid over het opgegeven aantal seconden."
+        },
+                        "args": [{
+                                "name": "device",
+                                "type": "device",
+                                "filter": "driver_id=lb130"
+                        }, {
+                                "name": "transition",
+                                "type": "number",
+                                "min": 1,
+                                "max": 3600,
+                                "placeholder": {
+                                        "en": "Transition time in seconds",
+                                        "nl": "Overgangstijd in seconden"
+                                }
+                        }]
+                } 
 	]
     }
 }
+
