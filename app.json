@@ -1,7 +1,7 @@
 {
     "id": "nu.baretta.tplink",
     "name": {
-        "en": "TP-Link HS100/HS110/HS200 Smart wall plug"
+        "en": "TP-Link Smart Devices"
     },
     "tags": {
         "en": [ "HS100","HS110","HS200","LB100","LB110","LB120","LB130" ],
