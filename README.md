@@ -54,6 +54,9 @@ the forum.
 
 # Changelog
 
+**Version 0.0.6:**
+- Changed name of the app to reflect the wider support for TP-Link devices.
+
 **Version 0.0.5:**
 - Added support for TP-Link light bulbs LB100, LB110, LB120 and LB130, including 'wake-up light' feature.
 
