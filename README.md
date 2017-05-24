@@ -2,7 +2,7 @@
 
 This app lets you control TP-Link Smart Plugs HS100 (plug with no energy monitoring) HS110 (plug with energy monitoring) and Smart Bulbs LB100, LB110, LB120 and LB130 from within flows and the (mobile) app. The HS200 Smart Switch is as of yet untested but should work as well (please let me know ;-) The same goes for the HS115 mini plug, this should work with the HS110 driver.
 
-In its current state, the app can auto-detect the IP address of the device, however it currently cannot detect when it is changed. It is advised to set it up to have a fixed IP address or a 'static lease' from the DHCP server until this feature is added. 
+In its current state, the app can auto-detect the IP address of the device when adding a device, however it currently cannot detect when it is changed. It is advised to set it up to have a fixed IP address or a 'static lease' from the DHCP server until this feature is added. 
 
 This app is based on the following resources:
 
@@ -24,8 +24,10 @@ Supported flow actions:
 
 * Switch on / off
 * Toggle on / off
-* Switch LED on / off ('nightmode')
+* Switch LED on / off ('nightmode', HS100/HS110)
 * reset power meter / undo reset power meter (HS110/HS200)
+* Transition on / off ('wake-up light', LB100/LB110/LB120/LB130)
+* Select mode (LB130) 
 
 Mobile capabilities:
 
@@ -35,9 +37,8 @@ Mobile capabilities:
 * Set light temperature (LB120/LB130)
 * Set hue (LB130)
 * Select mode (LB130)
-* Select preset (LB130) 
 
-Energy monitoring has currently not been implemented for the bulbs (LB110 and up) as I am not sure anyone would use it.
+Energy monitoring has currently not been implemented for the bulbs (LB110 and up) as I am not sure anyone would use it. The selection of pre-sets for the LB130 will be added.
 
 ![](https://drive.google.com/uc?id=0B4QdLfQ7j41Jc3daMm9xSmsyUjg)
 ![](https://drive.google.com/uc?id=0B4QdLfQ7j41JY3N5Y2JNRWZRVmM)
@@ -54,7 +55,7 @@ the forum.
 # Changelog
 
 **Version 0.0.5:**
-- Added support for TP-Link light bulbs LB100, LB110, LB120 and LB130
+- Added support for TP-Link light bulbs LB100, LB110, LB120 and LB130, including 'wake-up light' feature.
 
 **Version 0.0.4:**
 - Bugfixes. Added check on model type in autodiscovery. Autodiscovery can now detect both new and existing plugs (in case 
