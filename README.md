@@ -54,6 +54,9 @@ the forum.
 
 # Changelog
 
+**Version 0.0.7:**
+- Bumping version number to workaround an app store issue...
+
 **Version 0.0.6:**
 - Changed name of the app to reflect the wider support for TP-Link devices.
 
@@ -61,7 +64,7 @@ the forum.
 - Added support for TP-Link light bulbs LB100, LB110, LB120 and LB130, including 'wake-up light' feature.
 
 **Version 0.0.4:**
-- Bugfixes. Added check on model type in autodiscovery. Autodiscovery can now detect both new and existing plugs (in case 
+- Bugfixes. Added check on model type in autodiscovery. Autodiscovery can now detect both new and existing plugs 
 
 **Version 0.0.3:**
 - Bugfixes, added autodiscovery feature
