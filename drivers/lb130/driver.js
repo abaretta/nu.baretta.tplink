@@ -37,7 +37,7 @@ var logEvent = function(eventName, bulb) {
 module.exports.init = function(devices_data, callback) {
     devices_data.forEach(function(device_data) {
             Homey.log('TP Link smartbulb app - init device: ' + JSON.stringify(device_data));
-            Homey.log('TP Link smartplug app - model: ' + TPlinkModel);
+            Homey.log('TP Link smartbulb app - model: ' + TPlinkModel);
             initDevice(device_data);
 
         })
@@ -51,22 +51,25 @@ module.exports.pair = function(socket) {
 
         // discover function
         socket.on('discover', function(data, callback) {
-            client.on('bulb-new', (bulb) => {
-                logEvent('bulb-new', bulb);
-            });
-
             Homey.log('TP Link smartbulb app - Starting Bulb Discovery');
 
             // discover new bulbs
-            client.startDiscovery().once('bulb-new', (bulb) => {
-                // check if the discovered model matches the driver
-                if (bulb.model.match(myRegEx)) {
-                    Homey.log("TP Link smartbulb app - host: " + bulb.host + " model " + bulb.model + " name " + bulb.name + " mac " + bulb.mac);
+            client.startDiscovery()
+            client.on('bulb-new', (bulb) => {
+                logEvent('bulb-new', bulb);
+            if (bulb.model.match(myRegEx)) {
+               Homey.log("TP Link smartbulb app - bulb found: " + bulb.host + " model " + bulb.model + " name " + bulb.name + " mac " + bulb.mac);
+                // check if device is known
+                if (devices.hasOwnProperty(bulb.host)) {
+                    console.log("Key found in devices: " + JSON.stringify(devices));
+
+                    Homey.log("TP Link smartbulb app - device " + bulb.host + " is known, skipping. Model: " + bulb.model + " name " + bulb.name + " mac " + bulb.mac);
+                } else {
+                    Homey.log("TP Link smartbulb app - bulb found: " + bulb.host + " model " + bulb.model + " name " + bulb.name + " mac " + bulb.mac);
                     var data = {
                         id: bulb.host,
                         name: bulb.name
                     }
-
                     setTimeout(function() {
                         socket.emit('found', data);
                         client.stopDiscovery()
@@ -74,28 +77,32 @@ module.exports.pair = function(socket) {
                     Homey.log("TP Link smartbulb app - discovered new bulbs: " + data.id + " name " + data.name);
                     callback(null, data);
                 }
-            });
+              }
+            })
+            client.on('bulb-online', (bulb) => {
+                logEvent('bulb-online', bulb);
+            if (bulb.model.match(myRegEx)) {
+               Homey.log("TP Link smartbulb app - bulb found: " + bulb.host + " model " + bulb.model + " name " + bulb.name + " mac " + bulb.mac);
+                if (devices.hasOwnProperty(bulb.host)) {
+                    console.log("Key found in devices: " + JSON.stringify(devices));
 
-            // discover existing bulbs
-            client.startDiscovery().once('bulb-online', (bulb) => {
-                // check if the discovered model matches the driver
-                if (bulb.model.match(myRegEx)) {
-                    Homey.log("TP Link smartbulb app - host: " + bulb.host + " model " + bulb.model + " name " + bulb.name + " mac " + bulb.mac);
-
-                    data = {
+                    Homey.log("TP Link smartbulb app - device " + bulb.host + " is known, skipping. Model: " + bulb.model + " name " + bulb.name + " mac " + bulb.mac);
+                } else {
+                    Homey.log("TP Link smartbulb app - online bulb found: " + bulb.host + " model " + bulb.model + " name " + bulb.name + " mac " + bulb.mac);
+                    var data = {
                         id: bulb.host,
                         name: bulb.name
                     }
-
                     setTimeout(function() {
                         socket.emit('found', data);
                         client.stopDiscovery()
                     }, 1000);
-                    Homey.log("TP Link smartbulb app - discovered other bulbs: " + data.id + " name " + data.name);
+                    Homey.log("TP Link smartbulb app - discovered online bulb: " + data.id + " name " + data.name);
                     callback(null, data);
                 }
-            });
-        });
+              }
+            })
+           });
 
         // this method is run when Homey.emit('list_devices') is run on the front-end
         // which happens when you use the template `list_devices`

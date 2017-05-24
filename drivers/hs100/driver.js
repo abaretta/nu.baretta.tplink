@@ -34,119 +34,112 @@ var logEvent = function(eventName, plug) {
 };
 module.exports.init = function(devices_data, callback) {
     devices_data.forEach(function(device_data) {
-            Homey.log('TP Link smartplug app - init device: ' + JSON.stringify(device_data));
-            Homey.log('TP Link smartplug app - model: ' + TPlinkModel);
-            initDevice(device_data);
+        Homey.log('TP Link smartplug app - init device: ' + JSON.stringify(device_data));
+        Homey.log('TP Link smartplug app - model: ' + TPlinkModel);
+        initDevice(device_data);
 
-        })
-        //tell Homey we're happy to go
+    })
+    //tell Homey we're happy to go
     callback();
 }
 
 // start of pairing functions
 module.exports.pair = function(socket) {
-        // socket is a direct channel to the front-end
+    // socket is a direct channel to the front-end
 
-        // discover function
-        socket.on('discover', function(data, callback) {
-            client.on('plug-new', (plug) => {
-                logEvent('plug-new', plug);
-                plug.on('power-on', (plug) => {
-                    logEvent('power-on', plug);
-                });
-                plug.on('power-off', (plug) => {
-                    logEvent('power-off', plug);
-                });
-                plug.on('in-use', (plug) => {
-                    logEvent('in-use', plug);
-                });
-                plug.on('not-in-use', (plug) => {
-                    logEvent('not-in-use', plug);
-                });
-            });
-            //client.on('plug-online', (plug) => { logEvent('plug-online', plug); });
-            //client.on('plug-offline', (plug) => { logEvent('plug-offline', plug); });
+    // discover function
+    socket.on('discover', function(data, callback) {
+        Homey.log('TP Link smartplug app - Starting Plug Discovery');
 
-            Homey.log('TP Link smartplug app - Starting Plug Discovery');
+        // discover new plugs
+        client.startDiscovery();
+        client.on('plug-new', (plug) => {
+            logEvent('plug-new', plug);
+            Homey.log('TP Link smartplug app - devices: ' + JSON.stringify(devices));
+            if (plug.model.match(myRegEx)) {
+                // check if device is known
+                //Homey.log("TP Link smartplug app - device " + devices[].data.name);
+                if (devices.hasOwnProperty(plug.host)) {
+                    console.log("Key found in devices: " + JSON.stringify(devices));
 
-            // discover new plugs
-            client.startDiscovery().once('plug-new', (plug) => {
-                // check if the discovered model matches the driver
-                if (plug.model.match(myRegEx)) {
-                    Homey.log("TP Link smartplug app - host: " + plug.host + " model " + plug.model + " name " + plug.name + " mac " + plug.mac);
+                    Homey.log("TP Link smartplug app - device " + plug.host + " is known, skipping. Model: " + plug.model + " name " + plug.name + " mac " + plug.mac);
+                } else {
+                    Homey.log("TP Link smartplug app - plug found: " + plug.host + " model " + plug.model + " name " + plug.name + " mac " + plug.mac);
                     var data = {
                         id: plug.host,
                         name: plug.name
                     }
-
                     setTimeout(function() {
                         socket.emit('found', data);
                         client.stopDiscovery()
                     }, 1000);
-                    Homey.log("TP Link smartplug app - discovered new plugs: " + data.id + " name " + data.name);
+                    Homey.log("TP Link smartplug app - discovered new plug: " + data.id + " name " + data.name);
                     callback(null, data);
                 }
-            });
+            }
+        })
+        client.on('plug-online', (plug) => {
+            logEvent('plug-online', plug);
+            if (plug.model.match(myRegEx)) {
+                if (devices.hasOwnProperty(plug.host)) {
+                    console.log("Key found in devices: " + JSON.stringify(devices));
 
-            // discover existing plugs
-            client.startDiscovery().once('plug-online', (plug) => {
-                // check if the discovered model matches the driver
-                if (plug.model.match(myRegEx)) {
-                    Homey.log("TP Link smartplug app - host: " + plug.host + " model " + plug.model + " name " + plug.name + " mac " + plug.mac);
-
-                    data = {
+                    Homey.log("TP Link smartplug app - device " + plug.host + " is known, skipping. Model: " + plug.model + " name " + plug.name + " mac " + plug.mac);
+                } else {
+                    Homey.log("TP Link smartplug app - online plug found: " + plug.host + " model " + plug.model + " name " + plug.name + " mac " + plug.mac);
+                    var data = {
                         id: plug.host,
                         name: plug.name
                     }
-
                     setTimeout(function() {
                         socket.emit('found', data);
                         client.stopDiscovery()
                     }, 1000);
-                    Homey.log("TP Link smartplug app - discovered other plugs: " + data.id + " name " + data.name);
+                    Homey.log("TP Link smartplug app - discovered online plug: " + data.id + " name " + data.name);
                     callback(null, data);
                 }
-            });
-        });
-
-        // this method is run when Homey.emit('list_devices') is run on the front-end
-        // which happens when you use the template `list_devices`
-
-        socket.on('list_devices', function(data, callback) {
-
-            Homey.log("TP Link smartplug app - list_devices data: " + JSON.stringify(data));
-            // tempIP and tempDeviceName we got from when get_devices was run (hopefully?)
-
-            var newDevices = [{
-                name: tempDeviceName,
-                data: {
-                    id: tempIP
-                },
-                settings: {
-                    "settingIPAddress": tempIP
-                } // initial settings
-            }];
-
-            callback(null, newDevices);
-        });
-
-        // this is called when the user presses save settings button in start.html
-        socket.on('get_devices', function(data, callback) {
-
-            // Set passed pair settings in variables
-            tempIP = data.ipaddress;
-            tempDeviceName = data.deviceName;
-            Homey.log("TP Link smartplug app - got get_devices from front-end, tempIP =", tempIP, " tempDeviceName = ", tempDeviceName);
-            // FIXME: should check if IP leads to an actual TP link device
-            // assume IP is OK and continue, which will cause the front-end to run list_amplifiers which is the template list_devices
-            socket.emit('continue', null);
-        });
-
-        socket.on('disconnect', function() {
-            Homey.log("TP Link smartplug app - Pairing is finished (done or aborted)");
+            }
         })
-    }
-    // end pair
+    });
+
+    // this method is run when Homey.emit('list_devices') is run on the front-end
+    // which happens when you use the template `list_devices`
+
+    socket.on('list_devices', function(data, callback) {
+
+        Homey.log("TP Link smartplug app - list_devices data: " + JSON.stringify(data));
+        // tempIP and tempDeviceName we got from when get_devices was run (hopefully?)
+
+        var newDevices = [{
+            name: tempDeviceName,
+            data: {
+                id: tempIP
+            },
+            settings: {
+                "settingIPAddress": tempIP
+            } // initial settings
+        }];
+
+        callback(null, newDevices);
+    });
+
+    // this is called when the user presses save settings button in start.html
+    socket.on('get_devices', function(data, callback) {
+
+        // Set passed pair settings in variables
+        tempIP = data.ipaddress;
+        tempDeviceName = data.deviceName;
+        Homey.log("TP Link smartplug app - got get_devices from front-end, tempIP =", tempIP, " tempDeviceName = ", tempDeviceName);
+        // FIXME: should check if IP leads to an actual TP link device
+        // assume IP is OK and continue, which will cause the front-end to run list_amplifiers which is the template list_devices
+        socket.emit('continue', null);
+    });
+
+    socket.on('disconnect', function() {
+        Homey.log("TP Link smartplug app - Pairing is finished (done or aborted)");
+    })
+}
+// end pair
 
 module.exports.added = function(device_data, callback) {
     // run when a device has been added by the user 
@@ -525,21 +518,11 @@ function getDeviceByData(device_data) {
 function initDevice(device_data) {
     devices[device_data.id] = {};
     devices[device_data.id].state = {
-        onoff: true
-    };
-    devices[device_data.id].state = {
-        ledonoff: false
-    };
-    devices[device_data.id].state = {
-        meter_power: {}
-    };
-    devices[device_data.id].state = {
-        measure_power: {}
-    };
-    devices[device_data.id].state = {
-        measure_current: {}
-    };
-    devices[device_data.id].state = {
+        onoff: true,
+        ledonoff: false,
+        meter_power: {},
+        measure_power: {},
+        measure_current: {},
         measure_voltage: {}
     };
     devices[device_data.id].data = device_data;
@@ -547,7 +530,6 @@ function initDevice(device_data) {
         host: device_data.id
     });
     Homey.log('TP Link smartplug app - plug IP: ' + device_data.id);
-    //    getStatus(device_data);
 }
 
 // get driver name based on dirname (hs100, hs110, etc.)
@@ -555,5 +537,3 @@ function getDriverName() {
     var parts = __dirname.replace(/\\/g, '/').split('/');
     return parts[parts.length - 1].split('.')[0];
 }
-
-
