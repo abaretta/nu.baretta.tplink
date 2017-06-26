@@ -561,18 +561,12 @@ function getStatus(device_data) {
             host: device_data.id
         });
 
-            // old states
-            if (device.state.onoff == undefined) {
-                oldonoffState = false;
-            } else {
-                oldonoffState = device.state.onoff;
-            }
-
         bulb.getLightState().then((bulbState) => {
             //Homey.log('TP Link smartbulb app - getLightState: ' + JSON.stringify(bulbState)); 
             if (bulbState.on_off === 1) {
                 Homey.log('TP Link smartbulb app - bulb on ');
                 device.state.onoff = true;
+               
             // updated states
             //device.state.light_temperature = JSON.stringify(bulbState.dft_on_state.color_temp, null, 2);
             device.state.light_temperature = JSON.stringify(bulbState.color_temp, null, 2);
@@ -580,7 +574,6 @@ function getStatus(device_data) {
 	    // (huePercent + 0.01)* 360
             device.state.light_hue = round((bulbState.hue/360), 2);
             Homey.log('TP Link smartbulb app - hue : ' + device.state.light_hue);
-            Homey.log('TP Link smartbulb app - bulbState.hue : ' + bulbState.hue);
             device.state.light_saturation = bulbState.saturation/100;
             Homey.log('TP Link smartbulb app - saturation : ' + device.state.light_saturation);
             device.state.dim = bulbState.brightness/100;
@@ -589,6 +582,8 @@ function getStatus(device_data) {
             Homey.log('TP Link smartbulb app - mode : ' + bulbState.mode);
             } else {
                 Homey.log('TP Link smartbulb app - bulb off ');
+                Homey.log("TP Link smartbulb app - capability power on: " + device.state.onoff);
+                module.exports.realtime(device_data, 'onoff', device.state.onoff);
                 device.state.onoff = false;
             }
         });
@@ -639,13 +634,21 @@ function getStatus(device_data) {
             Homey.log('TP Link smartbulb app - mode changed: ' + device.state.mode);
             module.exports.realtime(device_data, 'mode', device.state.mode);
         }
-  //          oldpowerState = device.state.measure_power;
-  //          oldtotalState = device.state.meter_power;
-            oldColorTemp = device.state.light_temperature;
-            oldSaturation = device.state.light_saturation;
-            oldHue = device.state.light_hue;
-            oldBrightness = device.state.dim;
-            oldMode = device.state.mode;
+
+        // old states
+        if (device.state.onoff == undefined) {
+            oldonoffState = false;
+        } else {
+            oldonoffState = device.state.onoff;
+        }
+
+        // oldpowerState = device.state.measure_power;
+        // oldtotalState = device.state.meter_power;
+        oldColorTemp = device.state.light_temperature;
+        oldSaturation = device.state.light_saturation;
+        oldHue = device.state.light_hue;
+        oldBrightness = device.state.dim;
+        oldMode = device.state.mode;
 
     } catch (err) {
         Homey.log("TP Link smartbulb app - caught error in getStatus function" + err.message);
