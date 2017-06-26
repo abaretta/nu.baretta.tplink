@@ -38,7 +38,7 @@ Mobile capabilities:
 * Set hue (LB130)
 * Select mode (LB130)
 
-Energy monitoring has currently not been implemented for the bulbs (LB110 and up) as I am not sure anyone would use it. The selection of pre-sets for the LB130 will be added.
+Energy monitoring has currently not been implemented for the bulbs (LB110 and up) as I am not sure anyone would use it. The selection of pre-sets for the LB130 is currently not supported in the API.
 
 ![](https://drive.google.com/uc?id=0B4QdLfQ7j41Jc3daMm9xSmsyUjg)
 ![](https://drive.google.com/uc?id=0B4QdLfQ7j41JY3N5Y2JNRWZRVmM)
@@ -78,7 +78,7 @@ the forum.
 **Version 0.0.1:**
 - Initial version
 
-[forum]: https://forum.athom.com/discussion/2875/submitted-tp-link-hs100-hs110-hs200-app
+[forum]: https://forum.athom.com/discussion/3234
 [pp-donate-link]: https://www.paypal.me/Baretta
 [pp-donate-image]: https://www.paypalobjects.com/en_US/i/btn/btn_donate_SM.gif
 
