@@ -11,6 +11,8 @@ This app is based on the following resources:
 * https://www.softscheck.com/en/reverse-engineering-tp-link-hs110 
 * https://github.com/DaveGut/TP-Link-Bulbs  
 
+NB: in a recent firmware update a change was made in the API which has broken the Homey app for these devices. The fix for this will be forthcoming in Q4 2018.
+
 Supported flow triggers:
 
 * Power / total power changed (HS110/HS200)
@@ -46,13 +48,15 @@ Energy monitoring has currently not been implemented for the bulbs (LB110 and up
 
 ##### Donate: #####
 If you like the app you can show your appreciation by posting it in the [forum],
-and if you really like it you can donate. Feature requests can also be placed on
+and if you really like it you can donate. Bug reports and feature requests can also be placed on
 the forum.
 
-[![Paypal donate][pp-donate-image]][pp-donate-link]
 ===============================================================================
 
 # Changelog
+
+**Version 0.0.9**
+- Added fix for emetering change in API (for HS110 and HS200)
 
 **Version 0.0.8:**
 - Bugfixes for bulbs, added app to 'lights' category.
