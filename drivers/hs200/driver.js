@@ -459,22 +459,22 @@ function getStatus(device_data) {
 
             // updated states, added check/hack for newer FW's which report milli-amp/volt and wh instead of kilo
             if (data.emeter.get_realtime.current === undefined && data.emeter.get_realtime.current_ma !== undefined) {
-                device.state.measure_current = parseFloat(JSON.stringify(data.emeter.get_realtime.current_ma, null, 2)) * 1000;
+                device.state.measure_current = parseFloat(JSON.stringify(data.emeter.get_realtime.current_ma, null, 2)) / 1000;
             } else {
                 device.state.measure_current = parseFloat(JSON.stringify(data.emeter.get_realtime.current, null, 2));
             }
             if (data.emeter.get_realtime.voltage === undefined && data.emeter.get_realtime.voltage_mv !== undefined) {
-                device.state.measure_voltage = parseFloat(JSON.stringify(data.emeter.get_realtime.voltage_mv, null, 2)) * 1000;
+                device.state.measure_voltage = parseFloat(JSON.stringify(data.emeter.get_realtime.voltage_mv, null, 2)) / 1000;
             } else {
                 device.state.measure_voltage = parseFloat(JSON.stringify(data.emeter.get_realtime.voltage, null, 2));
             }
             if (data.emeter.get_realtime.power === undefined && data.emeter.get_realtime.power_mw !== undefined) {
-                device.state.measure_power = parseFloat(JSON.stringify(data.emeter.get_realtime.power_mw, null, 2)) * 1000;
+                device.state.measure_power = parseFloat(JSON.stringify(data.emeter.get_realtime.power_mw, null, 2)) / 1000;
             } else {
                 device.state.measure_power = parseFloat(JSON.stringify(data.emeter.get_realtime.power, null, 2));
             }
             if (data.emeter.get_realtime.total === undefined && data.emeter.get_realtime.total_wh !== undefined) {
-                var total = parseFloat(JSON.stringify(data.emeter.get_realtime.total_wh, null, 2)) * 1000;
+                var total = parseFloat(JSON.stringify(data.emeter.get_realtime.total_wh, null, 2)) / 1000;
             } else {
                 var total = parseFloat(JSON.stringify(data.emeter.get_realtime.total, null, 2));
             }
