@@ -1,5 +1,8 @@
 # Changelog
 
+**Version 0.0.14**
+- Ran into git issue... Re-added missing_modules. 
+
 **Version 0.0.13**
 - Updated node_modules. 
 
