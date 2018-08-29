@@ -3,8 +3,10 @@
 // We need network functions.
 var net = require('net');
 
-const TPLinkBulbApi = require('TPLinkBulb-api')
-const client = new TPLinkBulbApi.Client()
+const {
+    Client
+} = require('tplink-smarthome-api/src');
+const client = new Client();
 
 var TPlinkModel = getDriverName().toUpperCase();
 var myRegEx = new RegExp(TPlinkModel, 'g');
@@ -31,15 +33,16 @@ var oldColorTemp = {};
 var oldSaturation = {};
 var oldBrightness = {};
 var oldMode = {};
+var options = {};
 
-var logEvent = function(eventName, bulb) {
+var logEvent = function (eventName, bulb) {
     //  Homey.log(`${(new Date()).toISOString()} ${eventName} ${bulb.model} ${bulb.host} ${bulb.deviceId}`);
     Homey.log(`${(new Date()).toISOString()} ${eventName} ${bulb.model} ${bulb.host}`);
 };
 
 // init
-module.exports.init = function(devices_data, callback) {
-    devices_data.forEach(function(device_data) {
+module.exports.init = function (devices_data, callback) {
+    devices_data.forEach(function (device_data) {
         Homey.log('TP Link smartbulb app - init device: ' + JSON.stringify(device_data));
         Homey.log('TP Link smartbulb app - model: ' + TPlinkModel);
         initDevice(device_data);
@@ -50,11 +53,11 @@ module.exports.init = function(devices_data, callback) {
 }
 
 // start of pairing functions
-module.exports.pair = function(socket) {
+module.exports.pair = function (socket) {
     // socket is a direct channel to the front-end
 
     // discover function
-    socket.on('discover', function(data, callback) {
+    socket.on('discover', function (data, callback) {
         Homey.log('TP Link smartbulb app - Starting Bulb Discovery');
 
         // discover new bulbs
@@ -74,7 +77,7 @@ module.exports.pair = function(socket) {
                         id: bulb.host,
                         name: bulb.name
                     }
-                    setTimeout(function() {
+                    setTimeout(function () {
                         socket.emit('found', data);
                         client.stopDiscovery()
                     }, 1000);
@@ -97,7 +100,7 @@ module.exports.pair = function(socket) {
                         id: bulb.host,
                         name: bulb.name
                     }
-                    setTimeout(function() {
+                    setTimeout(function () {
                         socket.emit('found', data);
                         client.stopDiscovery()
                     }, 1000);
@@ -111,7 +114,7 @@ module.exports.pair = function(socket) {
     // this method is run when Homey.emit('list_devices') is run on the front-end
     // which happens when you use the template `list_devices`
 
-    socket.on('list_devices', function(data, callback) {
+    socket.on('list_devices', function (data, callback) {
 
         Homey.log("TP Link smartbulb app - list_devices data: " + JSON.stringify(data));
         // tempIP and tempDeviceName we got from when get_devices was run (hopefully?)
@@ -130,7 +133,7 @@ module.exports.pair = function(socket) {
     });
 
     // this is called when the user presses save settings button in start.html
-    socket.on('get_devices', function(data, callback) {
+    socket.on('get_devices', function (data, callback) {
 
         // Set passed pair settings in variables
         tempIP = data.ipaddress;
@@ -141,13 +144,13 @@ module.exports.pair = function(socket) {
         socket.emit('continue', null);
     });
 
-    socket.on('disconnect', function() {
+    socket.on('disconnect', function () {
         Homey.log("TP Link smartbulb app - Pairing is finished (done or aborted)");
     })
 }
 // end pair
 
-module.exports.added = function(device_data, callback) {
+module.exports.added = function (device_data, callback) {
     // run when a device has been added by the user
     Homey.log("TP Link smartbulb app - device added: " + JSON.stringify(device_data));
     // update devices data array
@@ -156,7 +159,7 @@ module.exports.added = function(device_data, callback) {
     callback(null, true);
 }
 
-module.exports.renamed = function(device_data, new_name) {
+module.exports.renamed = function (device_data, new_name) {
     // run when the user has renamed the device in Homey.
     // It is recommended to synchronize a device's name, so the user is not confused
     // when it uses another remote to control that device (e.g. the manufacturer's app).
@@ -165,7 +168,7 @@ module.exports.renamed = function(device_data, new_name) {
     devices[device_data.id].data.name = new_name;
 }
 
-module.exports.deleted = function(device_data) {
+module.exports.deleted = function (device_data) {
     // run when the user has deleted the device from Homey
     Homey.log("TP Link smartbulb app - device deleted: " + JSON.stringify(device_data));
     // remove from the devices array we keep
@@ -175,7 +178,7 @@ module.exports.deleted = function(device_data) {
 }
 
 // handling settings (wrench icon in devices)
-module.exports.settings = function(device_data, newSettingsObj, oldSettingsObj, changedKeysArr, callback) {
+module.exports.settings = function (device_data, newSettingsObj, oldSettingsObj, changedKeysArr, callback) {
     // run when the user has changed the device's settings in Homey.
     // changedKeysArr contains an array of keys that have been changed, for your convenience :)
 
@@ -187,7 +190,7 @@ module.exports.settings = function(device_data, newSettingsObj, oldSettingsObj, 
     Homey.log('TP Link smartbulb app - Settings were changed: ' + JSON.stringify(device_data) + ' / ' + JSON.stringify(newSettingsObj) + ' / old = ' + JSON.stringify(oldSettingsObj) + ' / changedKeysArr = ' + JSON.stringify(changedKeysArr));
 
     try {
-        changedKeysArr.forEach(function(key) {
+        changedKeysArr.forEach(function (key) {
             switch (key) {
                 case 'settingIPAddress':
                     Homey.log('TP Link smartbulb app - IP address changed to ' + newSettingsObj.settingIPAddress);
@@ -211,18 +214,18 @@ module.exports.settings = function(device_data, newSettingsObj, oldSettingsObj, 
 
 module.exports.capabilities = {
     onoff: {
-        get: function(device_data, callback) {
+        get: function (device_data, callback) {
             Homey.log("TP Link smartbulb app - getting device on/off status of " + device_data.id);
             var device = getDeviceByData(device_data);
             if (device instanceof Error) return callback(device);
-            intervalID = setInterval(function() {
+            intervalID = setInterval(function () {
                 Homey.log("TP Link smartbulb app - updating state every 10s for " + device_data.id);
                 getStatus(device_data);
             }, 10000);
             return callback(null, device.state.onoff);
         },
 
-        set: function(device_data, onoff, callback) {
+        set: function (device_data, onoff, callback) {
             Homey.log('TP Link smartbulb app - Setting device_status of ' + device_data.id + ' to ' + onoff);
             var device = getDeviceByData(device_data);
             if (device instanceof Error) return callback(device);
@@ -255,7 +258,7 @@ module.exports.capabilities = {
         },
     */
     light_hue: {
-        get: function(device_data, callback) {
+        get: function (device_data, callback) {
             Homey.log("TP Link smartbulb app - getting hue status of " + device_data.id);
             var device = getDeviceByData(device_data);
             if (device instanceof Error) return callback(device);
@@ -263,7 +266,7 @@ module.exports.capabilities = {
             return callback(null, device.state.light_hue);
         },
 
-        set: function(device_data, huePercent, callback) {
+        set: function (device_data, huePercent, callback) {
             Homey.log('TP Link smartbulb app - Setting hue of ' + device_data.id + ' to ' + (huePercent * 100) + " percent");
             var device = getDeviceByData(device_data);
             if (device instanceof Error) return callback(device);
@@ -283,7 +286,7 @@ module.exports.capabilities = {
     },
 
     light_temperature: {
-        get: function(device_data, callback) {
+        get: function (device_data, callback) {
             Homey.log("TP Link smartbulb app - getting light temperature status of " + device_data.id);
             var device = getDeviceByData(device_data);
             if (device instanceof Error) return callback(device);
@@ -291,7 +294,7 @@ module.exports.capabilities = {
             return callback(null, device.state.light_temperature);
         },
 
-        set: function(device_data, light_temperature, callback) {
+        set: function (device_data, light_temperature, callback) {
             var device = getDeviceByData(device_data);
             if (device instanceof Error) return callback(device);
             // name: 'color_temp', type: 'num', max: 9000, min: 2500, step: 1
@@ -309,7 +312,7 @@ module.exports.capabilities = {
     },
 
     dim: {
-        get: function(device_data, callback) {
+        get: function (device_data, callback) {
             Homey.log("TP Link smartbulb app - getting dim level of " + device_data.id);
             var device = getDeviceByData(device_data);
             if (device instanceof Error) return callback(device);
@@ -317,7 +320,7 @@ module.exports.capabilities = {
             return callback(null, device.state.dim);
         },
 
-        set: function(device_data, dimPercent, callback) {
+        set: function (device_data, dimPercent, callback) {
             var device = getDeviceByData(device_data);
             if (device instanceof Error) return callback(device);
             // name: 'brightness', type: 'num', max: 100, min: 5, step: 1
@@ -335,7 +338,7 @@ module.exports.capabilities = {
     },
 
     light_saturation: {
-        get: function(device_data, callback) {
+        get: function (device_data, callback) {
             Homey.log("TP Link smartbulb app - getting light saturation status of " + device_data.id);
             var device = getDeviceByData(device_data);
             if (device instanceof Error) return callback(device);
@@ -343,7 +346,7 @@ module.exports.capabilities = {
             return callback(null, device.state.light_saturation);
         },
 
-        set: function(device_data, saturationPercent, callback) {
+        set: function (device_data, saturationPercent, callback) {
             var device = getDeviceByData(device_data);
             if (device instanceof Error) return callback(device);
             // name: 'saturation', type: 'num', max: 100, min: 0, step: 1
@@ -371,26 +374,26 @@ module.exports.capabilities = {
 
 // start flow action handlers: on/off and color related actions are included by default with class 'light'
 
-Homey.manager('flow').on('action.circadianModeOn', function(callback, args) {
+Homey.manager('flow').on('action.circadianModeOn', function (callback, args) {
     var device = args.device;
     circadianModeOn(device);
     callback(null, true); // we've fired successfully
 });
 
-Homey.manager('flow').on('action.circadianModeOff', function(callback, args) {
+Homey.manager('flow').on('action.circadianModeOff', function (callback, args) {
     var device = args.device;
     circadianModeOff(device);
     callback(null, true); // we've fired successfully
 });
 
-Homey.manager('flow').on('action.transitionOn', function(callback, args) {
+Homey.manager('flow').on('action.transitionOn', function (callback, args) {
     var device = args.device;
     var transition = args.transition * 1000;
     onTransition(device, transition);
     callback(null, true); // we've fired successfully
 });
 
-Homey.manager('flow').on('action.transitionOff', function(callback, args) {
+Homey.manager('flow').on('action.transitionOff', function (callback, args) {
     var device = args.device;
     var transition = args.transition * 1000;
     offTransition(device, transition);
@@ -417,7 +420,17 @@ function powerOn(device_data) {
     bulb = client.getBulb({
         host: device_data.id
     });
-    bulb.setLightOnWithTrans(true, 100);
+    options = {
+        "transition_period": 100,
+        "on_off": 1,
+        "mode": device.state.mode,
+        "hue": (Math.round(device.state.light_hue * 360)),
+        "saturation": (Math.round(device.state.light_saturation * 100)),
+        "brightness": (Math.round(device.state.dim * 100)),
+        "color_temp": device.state.light_temperature,
+        "ignore_default": 0
+    }
+    bulb.lighting.setLightState(options);
 }
 
 function powerOff(device_data) {
@@ -425,7 +438,17 @@ function powerOff(device_data) {
     bulb = client.getBulb({
         host: device_data.id
     });
-    bulb.setLightOnWithTrans(false, 2000);
+    options = {
+        "transition_period": 100,
+        "on_off": 0,
+        "mode": device.state.mode,
+        "hue": (Math.round(device.state.light_hue * 360)),
+        "saturation": (Math.round(device.state.light_saturation * 100)),
+        "brightness": (Math.round(device.state.dim * 100)),
+        "color_temp": device.state.light_temperature,
+        "ignore_default": 0
+    }
+    bulb.lighting.setLightState(options);
 }
 
 function dim(device_data, dimLevel) {
@@ -433,7 +456,17 @@ function dim(device_data, dimLevel) {
     bulb = client.getBulb({
         host: device_data.id
     });
-    bulb.setLightState('"brightness"', dimLevel);
+    options = {
+        "transition_period": 100,
+        "on_off": device.state.onoff,
+        "mode": device.state.mode,
+        "hue": (Math.round(device.state.light_hue * 360)),
+        "saturation": (Math.round(device.state.light_saturation * 100)),
+        "brightness": dimLevel,
+        "color_temp": device.state.light_temperature,
+        "ignore_default": 0
+    }
+    bulb.lighting.setLightState(options);
 }
 
 function color_temp(device_data, tempLevel) {
@@ -441,7 +474,17 @@ function color_temp(device_data, tempLevel) {
     bulb = client.getBulb({
         host: device_data.id
     });
-    bulb.setLightState('"color_temp"', tempLevel);
+    options = {
+        "transition_period": 100,
+        "on_off": device.state.onoff,
+        "mode": device.state.mode,
+        "hue": (Math.round(device.state.light_hue * 360)),
+        "saturation": (Math.round(device.state.light_saturation * 100)),
+        "brightness": (Math.round(device.state.dim * 100)),
+        "color_temp": tempLevel,
+        "ignore_default": 0
+    }
+    bulb.lighting.setLightState(options);
 }
 
 function set_hue(device_data, hueLevel) {
@@ -449,7 +492,17 @@ function set_hue(device_data, hueLevel) {
     bulb = client.getBulb({
         host: device_data.id
     });
-    bulb.setLightColor(hueLevel, Math.round((device.state.light_saturation * 100)));
+    options = {
+        "transition_period": 100,
+        "on_off": device.state.onoff,
+        "mode": device.state.mode,
+        "hue": hueLevel,
+        "saturation": (Math.round(device.state.light_saturation * 100)),
+        "brightness": (Math.round(device.state.dim * 100)),
+        "color_temp": device.state.light_temperature,
+        "ignore_default": 0
+    }
+    bulb.lighting.setLightState(options);
 }
 
 function set_saturation(device_data, saturationLevel) {
@@ -457,7 +510,17 @@ function set_saturation(device_data, saturationLevel) {
     bulb = client.getBulb({
         host: device_data.id
     });
-    bulb.setLightColor(Math.round((device.state.light_hue) * 360), saturationLevel);
+    options = {
+        "transition_period": 100,
+        "on_off": device.state.onoff,
+        "mode": device.state.mode,
+        "hue": (Math.round(device.state.light_hue * 360)),
+        "saturation": saturationLevel,
+        "brightness": (Math.round(device.state.dim * 100)),
+        "color_temp": device.state.light_temperature,
+        "ignore_default": 0
+    }
+    bulb.lighting.setLightState(options);
 }
 
 function getPower(device_data) {
@@ -479,20 +542,40 @@ function getPower(device_data) {
 // mode 'normal', 'circadian'
 function circadianModeOn(device_data) {
     var device = getDeviceByData(device_data);
-    var mode = "circadian";
+    //var mode = "circadian";
     bulb = client.getBulb({
         host: device_data.id
     });
-    bulb.setLightState('"mode"', '"circadian"');
+    options = {
+        "transition_period": 100,
+        "on_off": device.state.onoff,
+        "mode": "circadian",
+        "hue": (Math.round(device.state.light_hue * 360)),
+        "saturation": (Math.round(device.state.light_saturation * 100)),
+        "brightness": (Math.round(device.state.dim * 100)),
+        "color_temp": device.state.light_temperature,
+        "ignore_default": 0
+    }
+    bulb.lighting.setLightState(options);
 }
 
 function circadianModeOff(device_data) {
     var device = getDeviceByData(device_data);
-    var mode = "normal";
+    //var mode = "normal";
     bulb = client.getBulb({
         host: device_data.id
     });
-    bulb.setLightState('"mode"', '"normal"');
+    options = {
+        "transition_period": 100,
+        "on_off": device.state.onoff,
+        "mode": "normal",
+        "hue": (Math.round(device.state.light_hue * 360)),
+        "saturation": (Math.round(device.state.light_saturation * 100)),
+        "brightness": (Math.round(device.state.dim * 100)),
+        "color_temp": device.state.light_temperature,
+        "ignore_default": 0
+    }
+    bulb.lighting.setLightState(options);
 }
 
 function onTransition(device_data, transition) {
@@ -500,7 +583,17 @@ function onTransition(device_data, transition) {
     bulb = client.getBulb({
         host: device_data.id
     });
-    bulb.setLightOnWithTrans(true, transition);
+    options = {
+        "transition_period": transition,
+        "on_off": device.state.onoff,
+        "mode": device.state.mode,
+        "hue": (Math.round(device.state.light_hue * 360)),
+        "saturation": (Math.round(device.state.light_saturation * 100)),
+        "brightness": (Math.round(device.state.dim * 100)),
+        "color_temp": device.state.light_temperature,
+        "ignore_default": 0
+    }
+    bulb.lighting.setLightState(options);
 }
 
 function offTransition(device_data, transition) {
@@ -508,7 +601,17 @@ function offTransition(device_data, transition) {
     bulb = client.getBulb({
         host: device_data.id
     });
-    bulb.setLightOnWithTrans(false, transition);
+    options = {
+        "transition_period": 100,
+        "on_off": device.state.onoff,
+        "mode": device.state.mode,
+        "hue": (Math.round(device.state.light_hue * 360)),
+        "saturation": (Math.round(device.state.light_saturation * 100)),
+        "brightness": (Math.round(device.state.dim * 100)),
+        "color_temp": device.state.light_temperature,
+        "ignore_default": 0
+    }
+    bulb.lighting.setLightState(options);
 }
 
 function getInfo(device_data) {
@@ -554,37 +657,40 @@ function undo_meter_reset(device_data) {
 function getStatus(device_data) {
     try {
         var device = getDeviceByData(device_data);
-        var commands = {
-            getConsumption: '{"emeter":{"get_realtime":{}}}'
-        };
         bulb = client.getBulb({
             host: device_data.id
         });
 
-        bulb.getLightState().then((bulbState) => {
-            //Homey.log('TP Link smartbulb app - getLightState: ' + JSON.stringify(bulbState));
-            if (bulbState.on_off === 1) {
+        bulb.getInfo().then((data) => {
+            //     Homey.log('TP Link smartbulb app - bulb data: ' + JSON.stringify(data));
+            //     Homey.log('TP Link smartbulb app - response from bulb - bulb on/off: ' + data.lighting.lightState.on_off);
+            //     Homey.log('TP Link smartbulb app - bulb mode: ' + data.lighting.lightState.mode);
+            //     Homey.log('TP Link smartbulb app - response from bulb - hue (0-360) : ' + data.lighting.lightState.hue);
+            //     Homey.log('TP Link smartbulb app - response from bulb - saturation (0-100) : ' + data.lighting.lightState.saturation);
+            //     Homey.log('TP Link smartbulb app - response from bulb - color_temp (2500-6500): ' + data.lighting.lightState.color_temp);
+            //     Homey.log('TP Link smartbulb app - response from bulb - brightness (0-100): ' + data.lighting.lightState.brightness);
+
+            if (data.lighting.lightState.on_off === 1) {
                 Homey.log('TP Link smartbulb app - bulb on ');
                 device.state.onoff = true;
 
                 // updated states
-                //device.state.light_temperature = JSON.stringify(bulbState.dft_on_state.color_temp, null, 2);
-                device.state.light_temperature = JSON.stringify(bulbState.color_temp, null, 2);
-                Homey.log('TP Link smartbulb app - light temperature : ' + device.state.light_temperature);
+                device.state.light_temperature = data.lighting.lightState.color_temp;
+                Homey.log('TP Link smartbulb app - light temperature (2500-9000): ' + device.state.light_temperature);
                 // (huePercent + 0.01)* 360
-                device.state.light_hue = round((bulbState.hue / 360), 2);
-                Homey.log('TP Link smartbulb app - hue : ' + device.state.light_hue);
-                device.state.light_saturation = bulbState.saturation / 100;
-                Homey.log('TP Link smartbulb app - saturation : ' + device.state.light_saturation);
-                device.state.dim = bulbState.brightness / 100;
-                Homey.log('TP Link smartbulb app - brightness : ' + device.state.dim);
-                device.state.mode = bulbState.mode;
-                Homey.log('TP Link smartbulb app - mode : ' + bulbState.mode);
+                device.state.light_hue = round((data.lighting.lightState.hue / 360), 2);
+                Homey.log('TP Link smartbulb app - hue (0-1) : ' + device.state.light_hue);
+                device.state.light_saturation = data.lighting.lightState.saturation / 100;
+                Homey.log('TP Link smartbulb app - saturation (0-1) : ' + device.state.light_saturation);
+                device.state.dim = data.lighting.lightState.brightness / 100;
+                Homey.log('TP Link smartbulb app - brightness (0-1): ' + device.state.dim);
+                device.state.mode = data.lighting.lightState.mode;
+                Homey.log('TP Link smartbulb app - mode : ' + data.lighting.lightState.mode);
             } else {
                 Homey.log('TP Link smartbulb app - bulb off ');
-                Homey.log("TP Link smartbulb app - capability power on: " + device.state.onoff);
-                module.exports.realtime(device_data, 'onoff', device.state.onoff);
                 device.state.onoff = false;
+                Homey.log("TP Link smartbulb app - capability power on: " + device.state.onoff);
+                // module.exports.realtime(device_data, 'onoff', device.state.onoff);
             }
         });
 
@@ -636,7 +742,7 @@ function getStatus(device_data) {
         }
 
         // old states
-        if (device.state.onoff == undefined) {
+        if (device.state.onoff === undefined) {
             oldonoffState = false;
         } else {
             oldonoffState = device.state.onoff;
@@ -651,7 +757,7 @@ function getStatus(device_data) {
         oldMode = device.state.mode;
 
     } catch (err) {
-        Homey.log("TP Link smartbulb app - caught error in getStatus function" + err.message);
+        Homey.log("TP Link smartbulb app - caught error in getStatus function " + err.message);
     }
 }
 

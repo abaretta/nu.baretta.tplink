@@ -3,8 +3,10 @@
 // We need network functions.
 var net = require('net');
 
-//const Hs100Api = require('../../node_modules/hs100-api');
-const Hs100Api = require('hs100-api');
+const {
+    Client
+} = require('tplink-smarthome-api/src');
+const client = new Client();
 var TPlinkModel = getDriverName().toUpperCase();
 var myRegEx = new RegExp(TPlinkModel, 'g');
 
@@ -19,21 +21,21 @@ var IPPort = 9999;
 // it is generally advisable to keep a list of
 // paired and active devices in your driver's memory.
 var devices = {};
-var client = new Hs100Api.Client();
+// var client = new Hs100Api.Client();
 var plug = '';
 var intervalID;
 var oldonoffState = false;
-var oldpowerState = 0;
+var oldpowerState = {};
 var oldtotalState = 0;
 var totalOffset = 0;
 var oldvoltageState = 0;
 var oldcurrentState = 0;
-var logEvent = function(eventName, plug) {
+var logEvent = function (eventName, plug) {
     //  Homey.log(`${(new Date()).toISOString()} ${eventName} ${plug.model} ${plug.host} ${plug.deviceId}`);
     Homey.log(`${(new Date()).toISOString()} ${eventName} ${plug.model} ${plug.host}`);
 };
-module.exports.init = function(devices_data, callback) {
-    devices_data.forEach(function(device_data) {
+module.exports.init = function (devices_data, callback) {
+    devices_data.forEach(function (device_data) {
         Homey.log('TP Link smartplug app - init device: ' + JSON.stringify(device_data));
         Homey.log('TP Link smartplug app - model: ' + TPlinkModel);
         initDevice(device_data);
@@ -44,11 +46,11 @@ module.exports.init = function(devices_data, callback) {
 }
 
 // start of pairing functions
-module.exports.pair = function(socket) {
+module.exports.pair = function (socket) {
     // socket is a direct channel to the front-end
 
     // discover function
-    socket.on('discover', function(data, callback) {
+    socket.on('discover', function (data, callback) {
         Homey.log('TP Link smartplug app - Starting Plug Discovery');
 
         // discover new plugs
@@ -69,7 +71,7 @@ module.exports.pair = function(socket) {
                         id: plug.host,
                         name: plug.name
                     }
-                    setTimeout(function() {
+                    setTimeout(function () {
                         socket.emit('found', data);
                         client.stopDiscovery()
                     }, 1000);
@@ -91,7 +93,7 @@ module.exports.pair = function(socket) {
                         id: plug.host,
                         name: plug.name
                     }
-                    setTimeout(function() {
+                    setTimeout(function () {
                         socket.emit('found', data);
                         client.stopDiscovery()
                     }, 1000);
@@ -105,7 +107,7 @@ module.exports.pair = function(socket) {
     // this method is run when Homey.emit('list_devices') is run on the front-end
     // which happens when you use the template `list_devices`
 
-    socket.on('list_devices', function(data, callback) {
+    socket.on('list_devices', function (data, callback) {
 
         Homey.log("TP Link smartplug app - list_devices data: " + JSON.stringify(data));
         // tempIP and tempDeviceName we got from when get_devices was run (hopefully?)
@@ -124,7 +126,7 @@ module.exports.pair = function(socket) {
     });
 
     // this is called when the user presses save settings button in start.html
-    socket.on('get_devices', function(data, callback) {
+    socket.on('get_devices', function (data, callback) {
 
         // Set passed pair settings in variables
         tempIP = data.ipaddress;
@@ -135,13 +137,13 @@ module.exports.pair = function(socket) {
         socket.emit('continue', null);
     });
 
-    socket.on('disconnect', function() {
+    socket.on('disconnect', function () {
         Homey.log("TP Link smartplug app - Pairing is finished (done or aborted)");
     })
 }
 // end pair
 
-module.exports.added = function(device_data, callback) {
+module.exports.added = function (device_data, callback) {
     // run when a device has been added by the user 
     Homey.log("TP Link smartplug app - device added: " + JSON.stringify(device_data));
     // update devices data array
@@ -150,7 +152,7 @@ module.exports.added = function(device_data, callback) {
     callback(null, true);
 }
 
-module.exports.renamed = function(device_data, new_name) {
+module.exports.renamed = function (device_data, new_name) {
     // run when the user has renamed the device in Homey.
     // It is recommended to synchronize a device's name, so the user is not confused
     // when it uses another remote to control that device (e.g. the manufacturer's app).
@@ -159,7 +161,7 @@ module.exports.renamed = function(device_data, new_name) {
     devices[device_data.id].data.name = new_name;
 }
 
-module.exports.deleted = function(device_data) {
+module.exports.deleted = function (device_data) {
     // run when the user has deleted the device from Homey
     Homey.log("TP Link smartplug app - device deleted: " + JSON.stringify(device_data));
     // remove from the devices array we keep
@@ -169,7 +171,7 @@ module.exports.deleted = function(device_data) {
 }
 
 // handling settings (wrench icon in devices)
-module.exports.settings = function(device_data, newSettingsObj, oldSettingsObj, changedKeysArr, callback) {
+module.exports.settings = function (device_data, newSettingsObj, oldSettingsObj, changedKeysArr, callback) {
     // run when the user has changed the device's settings in Homey.
     // changedKeysArr contains an array of keys that have been changed, for your convenience :)
 
@@ -181,7 +183,7 @@ module.exports.settings = function(device_data, newSettingsObj, oldSettingsObj, 
     Homey.log('TP Link smartplug app - Settings were changed: ' + JSON.stringify(device_data) + ' / ' + JSON.stringify(newSettingsObj) + ' / old = ' + JSON.stringify(oldSettingsObj) + ' / changedKeysArr = ' + JSON.stringify(changedKeysArr));
 
     try {
-        changedKeysArr.forEach(function(key) {
+        changedKeysArr.forEach(function (key) {
             switch (key) {
                 case 'settingIPAddress':
                     Homey.log('TP Link smartplug app - IP address changed to ' + newSettingsObj.settingIPAddress);
@@ -205,18 +207,18 @@ module.exports.settings = function(device_data, newSettingsObj, oldSettingsObj, 
 
 module.exports.capabilities = {
     onoff: {
-        get: function(device_data, callback) {
+        get: function (device_data, callback) {
             Homey.log("TP Link smartplug app - getting device on/off status of " + device_data.id);
             var device = getDeviceByData(device_data);
             if (device instanceof Error) return callback(device);
-            intervalID = setInterval(function() {
+            intervalID = setInterval(function () {
                 Homey.log("TP Link smartplug app - updating state every 10s for " + device_data.id);
                 getStatus(device_data);
             }, 10000);
-            return callback(null, device.state.onoff);
+            callback(null, device.state.onoff);
         },
 
-        set: function(device_data, onoff, callback) {
+        set: function (device_data, onoff, callback) {
             Homey.log('TP Link smartplug app - Setting device_status of ' + device_data.id + ' to ' + onoff);
             var device = getDeviceByData(device_data);
             if (device instanceof Error) return callback(device);
@@ -232,16 +234,15 @@ module.exports.capabilities = {
     },
 
     ledonoff: {
-        get: function(device_data, callback) {
+        get: function (device_data, callback) {
             Homey.log("TP Link smartplug app - getting LED on/off status of " + device_data.id);
             var device = getDeviceByData(device_data);
             if (device instanceof Error) return callback(device);
-            // device.state.ledonoff = getLed(device_data.id);
             device.state.ledonoff = getLed(device_data);
             callback(null, device.state.ledonoff);
         },
 
-        set: function(device_data, turnon, callback) {
+        set: function (device_data, turnon, callback) {
             Homey.log('TP Link smartplug app - setting LED status ' + device_data.id + ' to ' + turnon);
             var device = getDeviceByData(device_data);
             if (device instanceof Error) return callback(device);
@@ -258,7 +259,7 @@ module.exports.capabilities = {
     },
 
     meter_power: {
-        get: function(device_data, callback) {
+        get: function (device_data, callback) {
             var device = getDeviceByData(device_data);
             if (device instanceof Error) return callback(device);
 
@@ -267,7 +268,7 @@ module.exports.capabilities = {
     },
 
     measure_power: {
-        get: function(device_data, callback) {
+        get: function (device_data, callback) {
             var device = getDeviceByData(device_data);
             if (device instanceof Error) return callback(device);
 
@@ -276,16 +277,17 @@ module.exports.capabilities = {
     },
 
     measure_current: {
-        get: function(device_data, callback) {
+        get: function (device_data, callback) {
             var device = getDeviceByData(device_data);
             if (device instanceof Error) return callback(device);
 
             return callback(null, device.state.measure_current);
+
         }
     },
 
     measure_voltage: {
-        get: function(device_data, callback) {
+        get: function (device_data, callback) {
             var device = getDeviceByData(device_data);
             if (device instanceof Error) return callback(device);
 
@@ -299,27 +301,31 @@ module.exports.capabilities = {
 
 // start flow action handlers: on/off are included by default with class 'socket'
 
-Homey.manager('flow').on('action.ledOn', function(callback, args) {
+Homey.manager('flow').on('action.ledOn', function (callback, args) {
     var device = args.device;
     ledOn(device);
     callback(null, true); // we've fired successfully
 });
 
-Homey.manager('flow').on('action.ledOff', function(callback, args) {
+Homey.manager('flow').on('action.ledOff', function (callback, args) {
     var device = args.device;
     ledOff(device);
     callback(null, true); // we've fired successfully
 });
 
-Homey.manager('flow').on('action.meter_reset', function(callback, args) {
+Homey.manager('flow').on('action.meter_reset', function (callback, args) {
     var device = args.device;
-    meter_reset(device);
+    //meter_reset(device);
+    Homey.log('TP Link smartplug app - oldtotalState: ' + oldtotalState);
+    totalOffset = oldtotalState;
     callback(null, true); // we've fired successfully
 });
 
-Homey.manager('flow').on('action.undo_meter_reset', function(callback, args) {
+Homey.manager('flow').on('action.undo_meter_reset', function (callback, args) {
     var device = args.device;
-    undo_meter_reset(device);
+    //undo_meter_reset(device);
+    Homey.log('TP Link smartplug app - undo reset meter ');
+    totalOffset = 0;
     callback(null, true); // we've fired successfully
 });
 
@@ -349,22 +355,17 @@ function getPower(device_data) {
         host: device_data.id
     });
     plug.getSysInfo().then((sysInfo) => {
-        if (sysInfo.relay_state === 1) {
-            Homey.log('TP Link smartplug app - relay state on ');
-            callback(null, true);
-        } else {
-            Homey.log('TP Link smartplug app - relay state off ');
-            callback(null, false);
-        }
-    });
-}
-
-function getInfo(device_data) {
-    var device = getDeviceByData(device_data);
-    plug = client.getPlug({
-        host: device_data.id
-    });
-    plug.getInfo().then(Homey.log);
+            if (sysInfo.relay_state === 1) {
+                Homey.log('TP Link smartplug app - relay state on ');
+                callback(null, true);
+            } else {
+                Homey.log('TP Link smartplug app - relay state off ');
+                callback(null, false);
+            }
+        })
+        .catch((err) => {
+            Homey.log("TP Link smartplug app - caught error in getPower function: " + err.message);
+        });
 }
 
 function getLed(device_data) {
@@ -373,14 +374,18 @@ function getLed(device_data) {
         host: device_data.id
     });
     plug.getSysInfo().then((sysInfo) => {
-        if (sysInfo.led_off === 0) {
-            Homey.log('TP Link smartplug app - LED on ');
-            callback(null, true);
-        } else {
-            Homey.log('TP Link smartplug app - LED off ');
-            callback(null, false);
-        }
-    });
+            if (sysInfo.led_off === 0) {
+                Homey.log('TP Link smartplug app - LED on ');
+                return true;
+            } else {
+                Homey.log('TP Link smartplug app - LED off ');
+                return false;
+            }
+        })
+        .catch((err) => {
+            Homey.log("TP Link smartplug app - caught error in getLed function: " + err.message);
+        });
+
 }
 
 function ledOn(device_data) {
@@ -401,14 +406,6 @@ function ledOff(device_data) {
     plug.setLedState(0);
 }
 
-function getConsumption(device_data) {
-    var device = getDeviceByData(device_data);
-    plug = client.getPlug({
-        host: device_data.id
-    });
-    plug.getConsumption();
-}
-
 function meter_reset(device_data) {
     Homey.log('TP Link smartplug app - reset meter ');
     var device = getDeviceByData(device_data);
@@ -416,7 +413,8 @@ function meter_reset(device_data) {
     plug = client.getPlug({
         host: device_data.id
     });
-    plug.resetConsumption();
+    //FIXME
+    plug.emeter.eraseStats(null);
     Homey.log('TP Link smartplug app - oldtotalState: ' + oldtotalState);
     totalOffset = oldtotalState;
 }
@@ -428,49 +426,40 @@ function undo_meter_reset(device_data) {
     plug = client.getPlug({
         host: device_data.id
     });
-    plug.resetConsumption();
     totalOffset = 0;
 }
 
 function getStatus(device_data) {
     try {
         var device = getDeviceByData(device_data);
-        var commands = {
-            getConsumption: '{"emeter":{"get_realtime":{}}}'
-        };
         plug = client.getPlug({
             host: device_data.id
         });
 
-        plug.get(commands.getConsumption).then((data) => {
-            data.emeter;
-            //   Homey.log("TP Link smartplug app - info %j ", data.emeter);
+        plug.getInfo().then((data) => {
+            //Homey.log("TP Link smartplug app - meter power %j ", data.emeter.realtime.power);
+            //Homey.log("TP Link smartplug app - system %j ", data.sysInfo.relay_state);
 
-            // old states
-            if (device.state.onoff == undefined) {
-                oldonoffState = false;
-            } else {
-                oldonoffState = device.state.onoff;
-            }
+            oldonoffState = device.state.onoff;
             oldpowerState = device.state.measure_power;
             oldtotalState = device.state.meter_power;
             oldvoltageState = device.state.measure_voltage;
             oldcurrentState = device.state.measure_current;
 
-            // updated states
-            device.state.measure_current = parseFloat(JSON.stringify(data.emeter.get_realtime.current, null, 2));
-            device.state.measure_voltage = parseFloat(JSON.stringify(data.emeter.get_realtime.voltage, null, 2));
-            device.state.measure_power = parseFloat(JSON.stringify(data.emeter.get_realtime.power, null, 2));
-            var total = parseFloat(JSON.stringify(data.emeter.get_realtime.total, null, 2));
+            // updated states, added check/hack for newer FW's which report milli-amp/volt and wh instead of kilo
+            // NB: not needed anymore with new tplink-smarthome lib, it returns both
+            device.state.measure_current = data.emeter.realtime.current;
+            device.state.measure_voltage = data.emeter.realtime.voltage;
+            device.state.measure_power = data.emeter.realtime.power;
+            var total = data.emeter.realtime.total;
+
             Homey.log('TP Link smartplug app - total: ' + total);
             // for some reason the Kasa app does reset something, but not the total
             Homey.log('TP Link smartplug app - totalOffset: ' + totalOffset);
             device.state.meter_power = total - totalOffset;
             Homey.log('TP Link smartplug app - total - Offset: ' + device.state.meter_power);
-        });
 
-        plug.getSysInfo().then((sysInfo) => {
-            if (sysInfo.relay_state === 1) {
+            if (data.sysInfo.relay_state === 1) {
                 Homey.log('TP Link smartplug app - relay state on ');
                 device.state.onoff = true;
             } else {
@@ -478,6 +467,7 @@ function getStatus(device_data) {
                 device.state.onoff = false;
             }
         });
+
         // update realtime data only in case it changed
         if (oldonoffState != device.state.onoff) {
             Homey.log("TP Link smartplug app - capability power on: " + device.state.onoff);
@@ -500,7 +490,7 @@ function getStatus(device_data) {
             module.exports.realtime(device_data, 'measure_current', device.state.measure_current);
         }
     } catch (err) {
-        Homey.log("TP Link smartplug app - caught error in getStatus function" + err.message);
+        Homey.log("TP Link smartplug app - caught error in getStatus function: " + err.message);
     }
 }
 

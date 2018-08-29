@@ -6,12 +6,10 @@ In its current state, the app can auto-detect the IP address of the device when 
 
 This app is based on the following resources:
 
-* The HS100 API: https://github.com/plasticrake/hs100-api
+* The tplink-smarthome-api: https://github.com/plasticrake/tplink-smarthome-api
 * https://github.com/ggeorgovassilis/linuxscripts/tree/master/tp-link-hs100-smartplug
 * https://www.softscheck.com/en/reverse-engineering-tp-link-hs110 
 * https://github.com/DaveGut/TP-Link-Bulbs  
-
-NB: in a recent firmware update a change was made in the API which has broken the Homey app for these devices. The fix for this will be forthcoming in Q4 2018.
 
 Supported flow triggers:
 
@@ -54,6 +52,9 @@ the forum.
 ===============================================================================
 
 # Changelog
+
+**Version 0.0.11**
+- Rewritten based on new tplink-smarthome API. 
 
 **Version 0.0.9**
 - Added fix for emetering change in API (for HS110 and HS200)
