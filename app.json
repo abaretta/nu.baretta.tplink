@@ -7,7 +7,7 @@
         "en": [ "HS100","HS110","HS200","LB100","LB110","LB120","LB130" ],
         "nl": [ "HS100","HS110","HS200","LB100","LB110","LB120","LB130" ]
     },
-    "version": "0.0.12",
+    "version": "0.0.13",
     "compatibility": ">=1.2.0",
     "author": {
         "name": "Anne Baretta",

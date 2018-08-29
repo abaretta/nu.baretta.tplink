@@ -1,5 +1,8 @@
 # Changelog
 
+**Version 0.0.13**
+- Updated node_modules. 
+
 **Version 0.0.12**
 - Copied LB110 and LB120 drivers. 
 
