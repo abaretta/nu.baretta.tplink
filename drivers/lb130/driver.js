@@ -267,7 +267,7 @@ module.exports.capabilities = {
         },
 
         set: function (device_data, huePercent, callback) {
-            Homey.log('TP Link smartbulb app - Setting hue of ' + device_data.id + ' to ' + (huePercent * 100) + " percent");
+            Homey.log('TP Link smartbulb app - Setting hue of ' + device_data.id + ' to ' + Math.round(huePercent * 100) + " percent");
             var device = getDeviceByData(device_data);
             if (device instanceof Error) return callback(device);
             // name: 'hue', type: 'num', max: 360, min: 0, step: 1
@@ -281,7 +281,7 @@ module.exports.capabilities = {
             }
             // Homey.log('TP Link smartbulb app - Setting hue level of ' + device_data.id + ' to ' + hueLevel);
             set_hue(device_data, hueLevel);
-            callback(null, huePercent);
+            callback(null, Math.round(huePercent));
         }
     },
 
