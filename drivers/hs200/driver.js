@@ -24,7 +24,7 @@ var devices = {};
 // var client = new Hs100Api.Client();
 var plug = '';
 var intervalID;
-var oldonoffState = false;
+var oldonoffState = {};
 var oldpowerState = {};
 var oldtotalState = 0;
 var totalOffset = 0;
@@ -508,8 +508,8 @@ function getDeviceByData(device_data) {
 function initDevice(device_data) {
     devices[device_data.id] = {};
     devices[device_data.id].state = {
-        onoff: true,
-        ledonoff: false,
+        onoff: {},
+        ledonoff: {},
         meter_power: {},
         measure_power: {},
         measure_current: {},

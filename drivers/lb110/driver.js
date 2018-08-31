@@ -34,6 +34,7 @@ var oldSaturation = {};
 var oldBrightness = {};
 var oldMode = {};
 var options = {};
+var tempLevel = {};
 
 var logEvent = function (eventName, bulb) {
     //  Homey.log(`${(new Date()).toISOString()} ${eventName} ${bulb.model} ${bulb.host} ${bulb.deviceId}`);
@@ -272,14 +273,14 @@ module.exports.capabilities = {
             if (device instanceof Error) return callback(device);
             // name: 'hue', type: 'num', max: 360, min: 0, step: 1
             // FIXME: minimum is 3.6 instead of 0
-            var hueLevel = Math.round((huePercent) * 360);
+            var hueLevel = Math.round(huePercent * 360);
             if (hueLevel >= 360) {
                 hueLevel = 360;
             }
             if (hueLevel <= 0) {
                 hueLevel = 0;
             }
-            // Homey.log('TP Link smartbulb app - Setting hue level of ' + device_data.id + ' to ' + hueLevel);
+            Homey.log('TP Link smartbulb app - Setting hue level of ' + device_data.id + ' to ' + hueLevel);
             set_hue(device_data, hueLevel);
             callback(null, huePercent);
         }
@@ -298,7 +299,7 @@ module.exports.capabilities = {
             var device = getDeviceByData(device_data);
             if (device instanceof Error) return callback(device);
             // name: 'color_temp', type: 'num', max: 9000, min: 2500, step: 1
-            var tempLevel = Math.round(((1 - light_temperature) * 6565) + 2500);
+            tempLevel = Math.round(((1 - light_temperature) * 6565) + 2500);
             if (tempLevel >= 9000) {
                 tempLevel = 9000;
             }
@@ -350,7 +351,7 @@ module.exports.capabilities = {
             var device = getDeviceByData(device_data);
             if (device instanceof Error) return callback(device);
             // name: 'saturation', type: 'num', max: 100, min: 0, step: 1
-            var saturationLevel = Math.round((saturationPercent * 100));
+            var saturationLevel = Math.round(saturationPercent * 100);
             if (saturationLevel >= 100) {
                 saturationLevel = 100;
             }
@@ -421,14 +422,14 @@ function powerOn(device_data) {
         host: device_data.id
     });
     options = {
-        "transition_period": 100,
+        "transition_period": 300,
         "on_off": 1,
         "mode": device.state.mode,
-        "hue": (Math.round(device.state.light_hue * 360)),
-        "saturation": (Math.round(device.state.light_saturation * 100)),
-        "brightness": (Math.round(device.state.dim * 100)),
-        "color_temp": device.state.light_temperature,
-        "ignore_default": 0
+        "hue": Math.round(device.state.light_hue * 360),
+        "saturation": Math.round(device.state.light_saturation * 100),
+        "brightness": Math.round(device.state.dim * 100),
+        "color_temp": tempLevel,
+        "ignore_default": 1
     }
     bulb.lighting.setLightState(options);
 }
@@ -439,14 +440,14 @@ function powerOff(device_data) {
         host: device_data.id
     });
     options = {
-        "transition_period": 100,
+        "transition_period": 1000,
         "on_off": 0,
         "mode": device.state.mode,
-        "hue": (Math.round(device.state.light_hue * 360)),
-        "saturation": (Math.round(device.state.light_saturation * 100)),
-        "brightness": (Math.round(device.state.dim * 100)),
-        "color_temp": device.state.light_temperature,
-        "ignore_default": 0
+        "hue": Math.round(device.state.light_hue * 360),
+        "saturation": Math.round(device.state.light_saturation * 100),
+        "brightness": Math.round(device.state.dim * 100),
+        "color_temp": tempLevel,
+        "ignore_default": 1
     }
     bulb.lighting.setLightState(options);
 }
@@ -457,15 +458,16 @@ function dim(device_data, dimLevel) {
         host: device_data.id
     });
     options = {
-        "transition_period": 100,
+        "transition_period": 300,
         "on_off": device.state.onoff,
         "mode": device.state.mode,
-        "hue": (Math.round(device.state.light_hue * 360)),
-        "saturation": (Math.round(device.state.light_saturation * 100)),
+        "hue": Math.round(device.state.light_hue * 360),
+        "saturation": Math.round(device.state.light_saturation * 100),
         "brightness": dimLevel,
-        "color_temp": device.state.light_temperature,
-        "ignore_default": 0
+        "color_temp": tempLevel,
+        "ignore_default": 1
     }
+    Homey.log('TP Link smartbulb app - dim options : ' + JSON.stringify(options));
     bulb.lighting.setLightState(options);
 }
 
@@ -475,15 +477,16 @@ function color_temp(device_data, tempLevel) {
         host: device_data.id
     });
     options = {
-        "transition_period": 100,
+        "transition_period": 300,
         "on_off": device.state.onoff,
         "mode": device.state.mode,
-        "hue": (Math.round(device.state.light_hue * 360)),
-        "saturation": (Math.round(device.state.light_saturation * 100)),
-        "brightness": (Math.round(device.state.dim * 100)),
+        "hue": 0,
+        "saturation": 0,
+        "brightness": Math.round(device.state.dim * 100),
         "color_temp": tempLevel,
-        "ignore_default": 0
+        "ignore_default": 1
     }
+    Homey.log('TP Link smartbulb app - color_temp options : ' + JSON.stringify(options));
     bulb.lighting.setLightState(options);
 }
 
@@ -493,15 +496,16 @@ function set_hue(device_data, hueLevel) {
         host: device_data.id
     });
     options = {
-        "transition_period": 100,
+        "transition_period": 300,
         "on_off": device.state.onoff,
         "mode": device.state.mode,
         "hue": hueLevel,
-        "saturation": (Math.round(device.state.light_saturation * 100)),
-        "brightness": (Math.round(device.state.dim * 100)),
-        "color_temp": device.state.light_temperature,
-        "ignore_default": 0
+        "saturation": Math.round(device.state.light_saturation * 100),
+        "brightness": Math.round(device.state.dim * 100),
+        "color_temp": 0,
+        "ignore_default": 1
     }
+    Homey.log('TP Link smartbulb app - hue options : ' + JSON.stringify(options));
     bulb.lighting.setLightState(options);
 }
 
@@ -511,15 +515,16 @@ function set_saturation(device_data, saturationLevel) {
         host: device_data.id
     });
     options = {
-        "transition_period": 100,
+        "transition_period": 300,
         "on_off": device.state.onoff,
         "mode": device.state.mode,
-        "hue": (Math.round(device.state.light_hue * 360)),
+        "hue": Math.round(device.state.light_hue * 360),
         "saturation": saturationLevel,
-        "brightness": (Math.round(device.state.dim * 100)),
-        "color_temp": device.state.light_temperature,
-        "ignore_default": 0
+        "brightness": Math.round(device.state.dim * 100),
+        "color_temp": 0,
+        "ignore_default": 1
     }
+    Homey.log('TP Link smartbulb app - saturation options : ' + JSON.stringify(options));
     bulb.lighting.setLightState(options);
 }
 
@@ -547,14 +552,14 @@ function circadianModeOn(device_data) {
         host: device_data.id
     });
     options = {
-        "transition_period": 100,
+        "transition_period": 300,
         "on_off": device.state.onoff,
         "mode": "circadian",
-        "hue": (Math.round(device.state.light_hue * 360)),
-        "saturation": (Math.round(device.state.light_saturation * 100)),
-        "brightness": (Math.round(device.state.dim * 100)),
+        "hue": 0,
+        "saturation": 0,
+        "brightness": (device.state.dim * 100),
         "color_temp": device.state.light_temperature,
-        "ignore_default": 0
+        "ignore_default": 1
     }
     bulb.lighting.setLightState(options);
 }
@@ -569,11 +574,11 @@ function circadianModeOff(device_data) {
         "transition_period": 100,
         "on_off": device.state.onoff,
         "mode": "normal",
-        "hue": (Math.round(device.state.light_hue * 360)),
-        "saturation": (Math.round(device.state.light_saturation * 100)),
-        "brightness": (Math.round(device.state.dim * 100)),
+        "hue": Math.round(device.state.light_hue * 360),
+        "saturation": Math.round(device.state.light_saturation * 100),
+        "brightness": Math.round(device.state.dim * 100),
         "color_temp": device.state.light_temperature,
-        "ignore_default": 0
+        "ignore_default": 1
     }
     bulb.lighting.setLightState(options);
 }
@@ -587,11 +592,11 @@ function onTransition(device_data, transition) {
         "transition_period": transition,
         "on_off": device.state.onoff,
         "mode": device.state.mode,
-        "hue": (Math.round(device.state.light_hue * 360)),
-        "saturation": (Math.round(device.state.light_saturation * 100)),
-        "brightness": (Math.round(device.state.dim * 100)),
+        "hue": Math.round(device.state.light_hue * 360),
+        "saturation": Math.round(device.state.light_saturation * 100),
+        "brightness": Math.round(device.state.dim * 100),
         "color_temp": device.state.light_temperature,
-        "ignore_default": 0
+        "ignore_default": 1
     }
     bulb.lighting.setLightState(options);
 }
@@ -602,14 +607,14 @@ function offTransition(device_data, transition) {
         host: device_data.id
     });
     options = {
-        "transition_period": 100,
+        "transition_period": transition,
         "on_off": device.state.onoff,
         "mode": device.state.mode,
-        "hue": (Math.round(device.state.light_hue * 360)),
-        "saturation": (Math.round(device.state.light_saturation * 100)),
-        "brightness": (Math.round(device.state.dim * 100)),
+        "hue": Math.round(device.state.light_hue * 360),
+        "saturation": Math.round(device.state.light_saturation * 100),
+        "brightness": Math.round(device.state.dim * 100),
         "color_temp": device.state.light_temperature,
-        "ignore_default": 0
+        "ignore_default": 1
     }
     bulb.lighting.setLightState(options);
 }
@@ -675,7 +680,8 @@ function getStatus(device_data) {
                 device.state.onoff = true;
 
                 // updated states
-                device.state.light_temperature = data.lighting.lightState.color_temp;
+                device.state.light_temperature = round(1 - ((data.lighting.lightState.color_temp - 2500) / 6565),2);
+                //device.state.light_temperature = JSON.stringify(data.lighting.lightState.color_temp, null, 2); 
                 Homey.log('TP Link smartbulb app - light temperature (2500-9000): ' + device.state.light_temperature);
                 // (huePercent + 0.01)* 360
                 device.state.light_hue = round((data.lighting.lightState.hue / 360), 2);
@@ -775,7 +781,7 @@ function getDeviceByData(device_data) {
 function initDevice(device_data) {
     devices[device_data.id] = {};
     devices[device_data.id].state = {
-        onoff: true,
+        onoff: {},
         light_hue: {},
         light_saturation: {},
         dim: {},
