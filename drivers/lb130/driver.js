@@ -299,12 +299,16 @@ module.exports.capabilities = {
             var device = getDeviceByData(device_data);
             if (device instanceof Error) return callback(device);
             // name: 'color_temp', type: 'num', max: 9000, min: 2500, step: 1
-            tempLevel = Math.round(((1 - light_temperature) * 6565) + 2500);
-            if (tempLevel >= 9000) {
-                tempLevel = 9000;
-            }
-            if (tempLevel <= 2500) {
-                tempLevel = 2500;
+            if (light_temperature == 0) {
+                tempLevel = light_temperature;
+            } else {
+                tempLevel = Math.round(((1 - light_temperature) * 6565) + 2500);
+                if (tempLevel >= 9000) {
+                    tempLevel = 9000;
+                }
+                if (tempLevel <= 2500) {
+                    tempLevel = 2500;
+                }
             }
             Homey.log('TP Link smartbulb app - Setting light temperature of ' + device_data.id + ' to ' + tempLevel);
             color_temp(device_data, tempLevel);
@@ -670,19 +674,23 @@ function getStatus(device_data) {
             //     Homey.log('TP Link smartbulb app - bulb data: ' + JSON.stringify(data));
             //     Homey.log('TP Link smartbulb app - response from bulb - bulb on/off: ' + data.lighting.lightState.on_off);
             //     Homey.log('TP Link smartbulb app - bulb mode: ' + data.lighting.lightState.mode);
-            //     Homey.log('TP Link smartbulb app - response from bulb - hue (0-360) : ' + data.lighting.lightState.hue);
-            //     Homey.log('TP Link smartbulb app - response from bulb - saturation (0-100) : ' + data.lighting.lightState.saturation);
-            //     Homey.log('TP Link smartbulb app - response from bulb - color_temp (2500-6500): ' + data.lighting.lightState.color_temp);
-            //     Homey.log('TP Link smartbulb app - response from bulb - brightness (0-100): ' + data.lighting.lightState.brightness);
+            Homey.log('TP Link smartbulb app - response from bulb - hue (0-360) : ' + data.lighting.lightState.hue);
+            Homey.log('TP Link smartbulb app - response from bulb - saturation (0-100) : ' + data.lighting.lightState.saturation);
+            Homey.log('TP Link smartbulb app - response from bulb - color_temp (2500-9000): ' + data.lighting.lightState.color_temp);
+            Homey.log('TP Link smartbulb app - response from bulb - brightness (0-100): ' + data.lighting.lightState.brightness);
 
             if (data.lighting.lightState.on_off === 1) {
                 Homey.log('TP Link smartbulb app - bulb on ');
                 device.state.onoff = true;
 
                 // updated states
-                device.state.light_temperature = round(1 - ((data.lighting.lightState.color_temp - 2500) / 6565),2);
-                //device.state.light_temperature = JSON.stringify(data.lighting.lightState.color_temp, null, 2); 
-                Homey.log('TP Link smartbulb app - light temperature (2500-9000): ' + device.state.light_temperature);
+                if (data.lighting.lightState.color_temp == 0) {
+                    device.state.light_temperature == 0
+                } else {
+                    device.state.light_temperature = round(1 - ((data.lighting.lightState.color_temp - 2500) / 6565), 2);
+                    //device.state.light_temperature = JSON.stringify(data.lighting.lightState.color_temp, null, 2); 
+                    Homey.log('TP Link smartbulb app - light temperature (2500-9000): ' + device.state.light_temperature);
+                }
                 // (huePercent + 0.01)* 360
                 device.state.light_hue = round((data.lighting.lightState.hue / 360), 2);
                 Homey.log('TP Link smartbulb app - hue (0-1) : ' + device.state.light_hue);
