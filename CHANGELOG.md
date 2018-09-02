@@ -1,5 +1,8 @@
 # Changelog
 
+**Version 0.0.15**
+- Sorted out hue/saturation/color temp. options. 
+
 **Version 0.0.14**
 - Ran into git issue... Re-added missing_modules. 
 
