@@ -51,7 +51,7 @@ the forum.
 
 ===============================================================================
 
-[forum]: https://forum.athom.com/discussion/3234
+[forum]: https://community.athom.com/t/tp-link-smart-devices-central-topic/1045
 [pp-donate-link]: https://www.paypal.me/Baretta
 [pp-donate-image]: https://www.paypalobjects.com/en_US/i/btn/btn_donate_SM.gif
 

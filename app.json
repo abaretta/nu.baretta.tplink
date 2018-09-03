@@ -7,11 +7,19 @@
         "en": [ "HS100","HS110","HS200","LB100","LB110","LB120","LB130" ],
         "nl": [ "HS100","HS110","HS200","LB100","LB110","LB120","LB130" ]
     },
-    "version": "0.0.15",
+    "version": "0.0.16",
     "compatibility": ">=1.2.0",
+    "homeyCommunityTopicId" : 1045,
     "author": {
         "name": "Anne Baretta",
         "email": "dev@baretta.nu"
+    },
+    "contributing":{
+       "donate":{
+          "paypal":{
+             "username":"abaretta@gmail.com"
+          }
+       }
     },
     "images": {
       "large": "./assets/images/large.jpg",

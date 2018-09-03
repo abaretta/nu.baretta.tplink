@@ -1,5 +1,8 @@
 # Changelog
 
+**Version 0.0.16**
+- Edited app.json. Ready for beta release. 
+
 **Version 0.0.15**
 - Sorted out hue/saturation/color temp. options. 
 
