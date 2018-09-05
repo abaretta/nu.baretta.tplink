@@ -1,5 +1,8 @@
 # Changelog
 
+**Version 0.0.17**
+- Bumping version number, submitting for stable release. 
+
 **Version 0.0.16**
 - Edited app.json. Ready for beta release. 
 
