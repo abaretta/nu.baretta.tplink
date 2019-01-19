@@ -1,876 +1,559 @@
 {
-    "id": "nu.baretta.tplink",
-    "name": {
-        "en": "TP-Link Smart Devices"
-    },
-    "tags": {
-        "en": [ "HS100","HS110","HS200","LB100","LB110","LB120","LB130" ],
-        "nl": [ "HS100","HS110","HS200","LB100","LB110","LB120","LB130" ]
-    },
-    "version": "0.0.17",
-    "compatibility": ">=1.2.0",
-    "homeyCommunityTopicId" : 1045,
-    "author": {
-        "name": "Anne Baretta",
-        "email": "dev@baretta.nu"
-    },
-    "contributing":{
-       "donate":{
-          "paypal":{
-             "username":"abaretta@gmail.com"
-          }
-       }
-    },
-    "images": {
-      "large": "./assets/images/large.jpg",
-      "small": "./assets/images/small.jpg"
-    },
-    "category": [ "appliances", "lights" ],
-    "description": {
-      "en": "TP-Link Smart Plugs and Bulbs (WIFI)",
-      "nl": "TP-Link Smart Plugs en Lampen (WIFI)"
-    },
-    "dependencies": {
-    		"net": "*"
-    },
-    "capabilities": { 
-    "ledonoff": {
-	"type": "boolean",
-            "title": {
-                "en": "Switch LED on/off",
-                "nl": "Zet LED aan/uit"
-            },
-            "getable": true,
-            "setable": true
-	}
-    },
-    "drivers": [
-      {
-          "id": "hs100",
-          "name": {
-              "en": "HS100",
-              "nl": "HS100"
-          },
-          "images": {
-              "large": "drivers/hs100/assets/images/large.jpg",
-              "small": "drivers/hs100/assets/images/small.jpg"
-          },
-	"class": "socket",
-		"capabilities": [ "onoff", "ledonoff" ],
-                   "mobile": {
-	           "components": [
-	              {
-		                "id": "icon",
-		                "capabilities": ["onoff"]
-		         },
-			 {
-                                "id": "toggle",
-                                "capabilities": [ "onoff" ]
-		        }]
-          },
-          "pair": [
-            {
-              "id": "start"
-            },
-            {
-              "id": "list_devices",
-              "template": "list_devices",
-              "navigation": {
-                  "next": "add_plugs"
-              }
-            },
-            {
-              "id": "add_plugs",
-              "template": "add_devices"
-            }
-          ],
-          "settings": [
-            {
-              "type": "group",
-                      "label": {
-                          "en": "General settings",
-                          "nl": "Algemene instellingen"
-                      },
-                      "children": [
-                          {
-                              "id": "settingIPAddress",
-                              "type": "text",
-                              "label": {
-                                  "en": "IP address",
-                                  "nl": "IP adres"
-                              },
-                              "value": "0.0.0.0"
-                          }
-                      ]
-            }
-          ]
-      },
-      {
-          "id": "hs110",
-          "name": {
-              "en": "HS110",
-              "nl": "HS110"
-          },
-          "images": {
-              "large": "drivers/hs110/assets/images/large.jpg",
-              "small": "drivers/hs110/assets/images/small.jpg"
-          },
-	"class": "socket",
-		"capabilities": [ "onoff", "measure_power", "meter_power", "measure_current", "measure_voltage", "ledonoff" ],
-                   "mobile": {
-	           "components": [
-	              {
-		                "id": "icon",
-		                "capabilities": ["onoff"]
-		         }, {
-                                "id": "sensor",
-                                "capabilities": [
-                                "meter_power",
-                                "measure_power",
-                                "measure_current",
-                                "measure_voltage"
+        "id": "nu.baretta.tplink",
+        "sdk": 2,
+        "name": {
+                "en": "TP-Link Smart Devices",
+                "nl": "TP-Link Smart Home"
+        },
+        "tags": {
+                "en": ["light", "socket", "plug", "bulb", "energy monitoring", "HS100", "HS105", "HS110", "HS200", "LB100", "LB110", "LB120", "LB130", "LB200", "LB230"],
+                "nl": ["lamp", "licht", "energie monitoring", "HS100", "HS105", "HS110", "HS200", "LB100", "LB110", "LB120", "LB130", "LB200", "LB230"]
+        },
+        "version": "0.1.0",
+        "compatibility": ">=1.5.0",
+        "author": {
+                "name": "Anne Baretta",
+                "email": "dev@baretta.nu"
+        },
+        "homeyCommunityTopicId": 1045,
+        "contributors": {
+                "developers": [{
+                        "name": "Anne Baretta",
+                        "email": "dev@baretta.nu"
+                }]
+        },
+        "contributing": {
+                "donate": {
+                        "paypal": {
+                                "username": "abaretta@gmail.com"
+                        }
+                }
+        },
+        "images": {
+                "large": "./assets/images/large.jpg",
+                "small": "./assets/images/small.jpg"
+        },
+        "category": ["appliances", "lights"],
+        "description": {
+                "en": "TP-Link Smart Plugs and Bulbs (WIFI)",
+                "nl": "TP-Link Smart Plugs en Lampen (WIFI)"
+        },
+        "dependencies": {
+                "net": "*"
+        },
+        "capabilities": {
+                "ledonoff": {
+                        "type": "boolean",
+                        "title": {
+                                "en": "Switch LED on/off",
+                                "nl": "Zet LED aan/uit"
+                        },
+                        "getable": true,
+                        "setable": true
+                }
+        },
+        "drivers": [{
+                        "id": "hs100",
+                        "name": {
+                                "en": "HS100",
+                                "nl": "HS100"
+                        },
+                        "images": {
+                                "large": "drivers/hs100/assets/images/large.jpg",
+                                "small": "drivers/hs100/assets/images/small.jpg"
+                        },
+                        "class": "socket",
+                        "capabilities": ["onoff", "ledonoff"],
+                        "mobile": {
+                                "components": [{
+                                                "id": "icon",
+                                                "capabilities": ["onoff"]
+                                        },
+                                        {
+                                                "id": "toggle",
+                                                "capabilities": ["onoff"]
+                                        }
                                 ]
-                        }, {
-                                "id": "toggle",
-                                "capabilities": [ "onoff" ]
-		        }]
-          },
-          "pair": [
-            {
-              "id": "start"
-            },
-            {
-              "id": "list_devices",
-              "template": "list_devices",
-              "navigation": {
-                  "next": "add_plugs"
-              }
-            },
-            {
-              "id": "add_plugs",
-              "template": "add_devices"
-            }
-          ],
-          "settings": [
-            {
-              "type": "group",
-                      "label": {
-                          "en": "General settings",
-                          "nl": "Algemene instellingen"
-                      },
-                      "children": [
-                          {
-                              "id": "settingIPAddress",
-                              "type": "text",
-                              "label": {
-                                  "en": "IP address",
-                                  "nl": "IP adres"
-                              },
-                              "value": "0.0.0.0"
-                          }
-                      ]
-            }
-          ]
-      },
-      {
-          "id": "hs200",
-          "name": {
-              "en": "HS200",
-              "nl": "HS200"
-          },
-          "images": {
-              "large": "drivers/hs200/assets/images/large.jpg",
-              "small": "drivers/hs200/assets/images/small.jpg"
-          },
-	"class": "socket",
-		"capabilities": [ "onoff", "measure_power", "meter_power", "measure_current", "measure_voltage", "ledonoff" ],
-                   "mobile": {
-	           "components": [
-	              {
-		                "id": "icon",
-		                "capabilities": ["onoff"]
-		         }, {
-                                "id": "sensor",
-                                "capabilities": [
-                                "meter_power",
-                                "measure_power",
-                                "measure_current",
-                                "measure_voltage"
-                                ]
-                        }, {
-                                "id": "toggle",
-                                "capabilities": [ "onoff" ]
-		        }]
-          },
-          "pair": [
-            {
-              "id": "start"
-            },
-            {
-              "id": "list_devices",
-              "template": "list_devices",
-              "navigation": {
-                  "next": "add_plugs"
-              }
-            },
-            {
-              "id": "add_plugs",
-              "template": "add_devices"
-            }
-          ],
-          "settings": [
-            {
-              "type": "group",
-                      "label": {
-                          "en": "General settings",
-                          "nl": "Algemene instellingen"
-                      },
-                      "children": [
-                          {
-                              "id": "settingIPAddress",
-                              "type": "text",
-                              "label": {
-                                  "en": "IP address",
-                                  "nl": "IP adres"
-                              },
-                              "value": "0.0.0.0"
-                          }
-                      ]
-            }
-          ]
-      },
-      {
-          "id": "lb100",
-          "name": {
-              "en": "LB100",
-              "nl": "LB100"
-          },
-          "images": {
-              "large": "drivers/lb100/assets/images/large.jpg",
-              "small": "drivers/lb100/assets/images/small.jpg"
-          },
-	"class": "light",
-		"capabilities": [ "onoff", "measure_power", "meter_power", "dim", "light_mode" ],
-          "pair": [
-            {
-              "id": "start"
-            },
-            {
-              "id": "list_devices",
-              "template": "list_devices",
-              "navigation": {
-                  "next": "add_plugs"
-              }
-            },
-            {
-              "id": "add_plugs",
-              "template": "add_devices"
-            }
-          ],
-          "settings": [
-            {
-              "type": "group",
-                      "label": {
-                          "en": "General settings",
-                          "nl": "Algemene instellingen"
-                      },
-                      "children": [
-                          {
-                              "id": "settingIPAddress",
-                              "type": "text",
-                              "label": {
-                                  "en": "IP address",
-                                  "nl": "IP adres"
-                              },
-                              "value": "0.0.0.0"
-                          }
-                      ]
-            }
-          ]
-      },
-      {
-          "id": "lb110",
-          "name": {
-              "en": "LB110",
-              "nl": "LB110"
-          },
-          "images": {
-              "large": "drivers/lb110/assets/images/large.jpg",
-              "small": "drivers/lb110/assets/images/small.jpg"
-          },
-	"class": "light",
-		"capabilities": [ "onoff", "measure_power", "meter_power", "dim", "light_mode" ],
-          "pair": [
-            {
-              "id": "start"
-            },
-            {
-              "id": "list_devices",
-              "template": "list_devices",
-              "navigation": {
-                  "next": "add_plugs"
-              }
-            },
-            {
-              "id": "add_plugs",
-              "template": "add_devices"
-            }
-          ],
-          "settings": [
-            {
-              "type": "group",
-                      "label": {
-                          "en": "General settings",
-                          "nl": "Algemene instellingen"
-                      },
-                      "children": [
-                          {
-                              "id": "settingIPAddress",
-                              "type": "text",
-                              "label": {
-                                  "en": "IP address",
-                                  "nl": "IP adres"
-                              },
-                              "value": "0.0.0.0"
-                          }
-                      ]
-            }
-          ]
-      },
-      {
-          "id": "lb120",
-          "name": {
-              "en": "LB120",
-              "nl": "LB120"
-          },
-          "images": {
-              "large": "drivers/lb120/assets/images/large.jpg",
-              "small": "drivers/lb120/assets/images/small.jpg"
-          },
-	"class": "light",
-		"capabilities": [ "onoff", "measure_power", "meter_power", "dim", "light_saturation","light_mode","light_temperature" ],
-          "pair": [
-            {
-              "id": "start"
-            },
-            {
-              "id": "list_devices",
-              "template": "list_devices",
-              "navigation": {
-                  "next": "add_plugs"
-              }
-            },
-            {
-              "id": "add_plugs",
-              "template": "add_devices"
-            }
-          ],
-          "settings": [
-            {
-              "type": "group",
-                      "label": {
-                          "en": "General settings",
-                          "nl": "Algemene instellingen"
-                      },
-                      "children": [
-                          {
-                              "id": "settingIPAddress",
-                              "type": "text",
-                              "label": {
-                                  "en": "IP address",
-                                  "nl": "IP adres"
-                              },
-                              "value": "0.0.0.0"
-                          }
-                      ]
-            }
-          ]
-      },
-      {
-          "id": "lb130",
-          "name": {
-              "en": "LB130",
-              "nl": "LB130"
-          },
-          "images": {
-              "large": "drivers/lb130/assets/images/large.jpg",
-              "small": "drivers/lb130/assets/images/small.jpg"
-          },
-	"class": "light",
-		"capabilities": [ "onoff", "dim", "light_hue", "light_saturation","light_mode","light_temperature" ],
-          "pair": [
-            {
-              "id": "start"
-            },
-            {
-              "id": "list_devices",
-              "template": "list_devices",
-              "navigation": {
-                  "next": "add_plugs"
-              }
-            },
-            {
-              "id": "add_plugs",
-              "template": "add_devices"
-            }
-          ],
-          "settings": [
-            {
-              "type": "group",
-                      "label": {
-                          "en": "General settings",
-                          "nl": "Algemene instellingen"
-                      },
-                      "children": [
-                          {
-                              "id": "settingIPAddress",
-                              "type": "text",
-                              "label": {
-                                  "en": "IP address",
-                                  "nl": "IP adres"
-                              },
-                              "value": "0.0.0.0"
-                          }
-                      ]
-            }
-          ]
-      }
-    ],
-    "flow": {
-        "actions": [
-	{
-            "id": "ledOn",
-            "title": {
-                "en": "Turn LED on",
-                "nl": "Zet LED aan"
-            },
-        "hint": {
-          "en": "Turn the LED on (turn off 'nightmode').",
-          "nl": "Zet de LED aan (zet 'nachtmode' uit). "
-        },
-            "args": [
-              {
-                "name": "device",
-                "type": "device",
-                "filter": "driver_id=hs100"
-              }
-            ]
-        },
-	{
-            "id": "ledOff",
-            "title": {
-                "en": "Turn LED off",
-                "nl": "Zet LED uit"
-            },
-        "hint": {
-          "en": "Turn the LED off ('nightmode'). Use with care, the power remains on!",
-          "nl": "Zet de LED uit ('nachtmode'). Let op, de stroom blijft ingeschakeld!"
-        },
-            "args": [
-              {
-                "name": "device",
-                "type": "device",
-                "filter": "driver_id=hs100"
-              }
-            ]
-        },
-	{
-            "id": "ledOn",
-            "title": {
-                "en": "Turn LED on",
-                "nl": "Zet LED aan"
-            },
-        "hint": {
-          "en": "Turn the LED on (turn off 'nightmode').",
-          "nl": "Zet de LED aan (zet 'nachtmode' uit). "
-        },
-            "args": [
-              {
-                "name": "device",
-                "type": "device",
-                "filter": "driver_id=hs110"
-              }
-            ]
-        },
-	{
-            "id": "ledOff",
-            "title": {
-                "en": "Turn LED off",
-                "nl": "Zet LED uit"
-            },
-        "hint": {
-          "en": "Turn the LED off ('nightmode'). Use with care, the power remains on!",
-          "nl": "Zet de LED uit ('nachtmode'). Let op, de stroom blijft ingeschakeld!"
-        },
-            "args": [
-              {
-                "name": "device",
-                "type": "device",
-                "filter": "driver_id=hs110"
-              }
-            ]
-        },
-	{
-        "id": "meter_reset",
-        "title": {
-          "en": "Reset meter values",
-          "nl": "Meter waarden resetten"
-        },
-        "hint": {
-          "en": "Reset the accumulated power usage (kWh). Can be reversed with the next action card.",
-          "nl": "Reset de stroomverbruik (kWh) waarden. Kan ongedaan gemaakt worden met de volgende kaart."
-        },
-        "args": [
-          {
-            "name": "device",
-            "type": "device",
-            "filter": "driver_id=hs110"
-          }
-        ]
-	},
-	{
-        "id": "undo_meter_reset",
-        "title": {
-          "en": "Undo reset meter values",
-          "nl": "Ongedaan maken meter resetten"
-        },
-        "hint": {
-          "en": "Undo resetting the accumulated power usage (kWh).",
-          "nl": "Maak reset van stroomverbruik ongedaan."
-        },
-        "args": [
-          {
-            "name": "device",
-            "type": "device",
-            "filter": "driver_id=hs110"
-          }
-        ]
-	},
-	{
-            "id": "ledOn",
-            "title": {
-                "en": "Turn LED on",
-                "nl": "Zet LED aan"
-            },
-        "hint": {
-          "en": "Turn the LED on (turn off 'nightmode').",
-          "nl": "Zet de LED aan (zet 'nachtmode' uit). "
-        },
-            "args": [
-              {
-                "name": "device",
-                "type": "device",
-                "filter": "driver_id=hs200"
-              }
-            ]
-        },
-	{
-            "id": "ledOff",
-            "title": {
-                "en": "Turn LED off",
-                "nl": "Zet LED uit"
-            },
-        "hint": {
-          "en": "Turn the LED off ('nightmode'). Use with care, the power remains on!",
-          "nl": "Zet de LED uit ('nachtmode'). Let op, de stroom blijft ingeschakeld!"
-        },
-            "args": [
-              {
-                "name": "device",
-                "type": "device",
-                "filter": "driver_id=hs200"
-              }
-            ]
-        },
-	{
-        "id": "meter_reset",
-        "title": {
-          "en": "Reset meter values",
-          "nl": "Meter waarden resetten"
-        },
-        "hint": {
-          "en": "Reset the accumulated power usage (kWh). Can be reversed with the next action card.",
-          "nl": "Reset de stroomverbruik (kWh) waarden. Kan ongedaan gemaakt worden met de volgende kaart."
-        },
-        "args": [
-          {
-            "name": "device",
-            "type": "device",
-            "filter": "driver_id=hs200"
-          }
-        ]
-	},
-	{
-        "id": "undo_meter_reset",
-        "title": {
-          "en": "Undo reset meter values",
-          "nl": "Ongedaan maken meter resetten"
-        },
-        "hint": {
-          "en": "Undo resetting the accumulated power usage (kWh).",
-          "nl": "Maak reset van stroomverbruik ongedaan."
-        },
-        "args": [
-          {
-            "name": "device",
-            "type": "device",
-            "filter": "driver_id=hs200"
-          }
-        ]
-	}, {
-                        "id": "transitionOn",
-                        "title": {
-                                "en": "Turn bulb on with a transition in brightness.",
-                                "nl": "Aan, geleidelijke toename van helderheid."
                         },
-       "hint": {
-          "en": "Turn the bulb on with a transistion in brightness over the entered number of seconds.",
-          "nl": "Schakel de lamp aan met een geleidelijke toename van de helderheid over het opgegeven aantal seconden."
-        },
-                        "args": [{
-                                "name": "device",
-                                "type": "device",
-                                "filter": "driver_id=lb100"
-                        }, {
-                                "name": "transition",
-                                "type": "number",
-                                "min": 1,
-                                "max": 3600,
-                                "placeholder": {
-                                        "en": "Transition time in seconds",
-                                        "nl": "Overgangstijd in seconden"
+                        "pair": [{
+                                        "id": "start"
+                                },
+                                {
+                                        "id": "list_devices",
+                                        "template": "list_devices",
+                                        "navigation": {
+                                                "next": "add_plugs"
+                                        }
+                                },
+                                {
+                                        "id": "add_plugs",
+                                        "template": "add_devices"
                                 }
+                        ],
+                        "settings": [{
+                                "type": "group",
+                                "label": {
+                                        "en": "General settings",
+                                        "nl": "Algemene instellingen"
+                                },
+                                "children": [{
+                                        "id": "settingIPAddress",
+                                        "type": "text",
+                                        "label": {
+                                                "en": "IP address",
+                                                "nl": "IP adres"
+                                        },
+                                        "value": "0.0.0.0"
+                                }]
                         }]
-                },{
-                        "id": "transitionOff",
-                        "title": {
-                                "en": "Turn bulb off with a transition in brightness.",
-                                "nl": "Uit, geleidelijke afname van helderheid."
+                },
+                {
+                        "id": "hs110",
+                        "name": {
+                                "en": "HS110",
+                                "nl": "HS110"
                         },
-       "hint": {
-          "en": "Turn the bulb off with a transistion in brightness over the entered number of seconds.",
-          "nl": "Schakel de lamp uit met een geleidelijke afname van de helderheid over het opgegeven aantal seconden."
-        },
-                        "args": [{
-                                "name": "device",
-                                "type": "device",
-                                "filter": "driver_id=lb100"
-                        }, {
-                                "name": "transition",
-                                "type": "number",
-                                "min": 1,
-                                "max": 3600,
-                                "placeholder": {
-                                        "en": "Transition time in seconds",
-                                        "nl": "Overgangstijd in seconden"
+                        "images": {
+                                "large": "drivers/hs110/assets/images/large.jpg",
+                                "small": "drivers/hs110/assets/images/small.jpg"
+                        },
+                        "class": "socket",
+                        "capabilities": ["onoff", "measure_power", "meter_power", "measure_current", "measure_voltage", "ledonoff"],
+                        "mobile": {
+                                "components": [{
+                                        "id": "icon",
+                                        "capabilities": ["onoff"]
+                                }, {
+                                        "id": "sensor",
+                                        "capabilities": [
+                                                "meter_power",
+                                                "measure_power",
+                                                "measure_current",
+                                                "measure_voltage"
+                                        ]
+                                }, {
+                                        "id": "toggle",
+                                        "capabilities": ["onoff"]
+                                }]
+                        },
+                        "pair": [{
+                                        "id": "start"
+                                },
+                                {
+                                        "id": "list_devices",
+                                        "template": "list_devices",
+                                        "navigation": {
+                                                "next": "add_plugs"
+                                        }
+                                },
+                                {
+                                        "id": "add_plugs",
+                                        "template": "add_devices"
                                 }
+                        ],
+                        "settings": [{
+                                "type": "group",
+                                "label": {
+                                        "en": "General settings",
+                                        "nl": "Algemene instellingen"
+                                },
+                                "children": [{
+                                        "id": "settingIPAddress",
+                                        "type": "text",
+                                        "label": {
+                                                "en": "IP address",
+                                                "nl": "IP adres"
+                                        },
+                                        "value": "0.0.0.0",
+                                        "hint": {
+                                                "en": "Only change the IP address here if the device's IP address has changed! This does not change the IP adres on the device.",
+                                                "nl": "Pas het IP adres hier alleen aan als het IP adres van de TP-Link veranderd is! De instelling veranderd het IP van de TP-Link niet."
+                                        }
+                                }]
                         }]
-                }, {
-                        "id": "transitionOn",
-                        "title": {
-                                "en": "Turn bulb on with a transition in brightness.",
-                                "nl": "Aan, geleidelijke toename van helderheid."
+                },
+                {
+                        "id": "hs200",
+                        "name": {
+                                "en": "HS200",
+                                "nl": "HS200"
                         },
-       "hint": {
-          "en": "Turn the bulb on with a transistion in brightness over the entered number of seconds.",
-          "nl": "Schakel de lamp aan met een geleidelijke toename van de helderheid over het opgegeven aantal seconden."
-        },
-                        "args": [{
-                                "name": "device",
-                                "type": "device",
-                                "filter": "driver_id=lb110"
-                        }, {
-                                "name": "transition",
-                                "type": "number",
-                                "min": 1,
-                                "max": 3600,
-                                "placeholder": {
-                                        "en": "Transition time in seconds",
-                                        "nl": "Overgangstijd in seconden"
+                        "images": {
+                                "large": "drivers/hs200/assets/images/large.jpg",
+                                "small": "drivers/hs200/assets/images/small.jpg"
+                        },
+                        "class": "socket",
+                        "capabilities": ["onoff", "measure_power", "meter_power", "measure_current", "measure_voltage", "ledonoff"],
+                        "mobile": {
+                                "components": [{
+                                        "id": "icon",
+                                        "capabilities": ["onoff"]
+                                }, {
+                                        "id": "sensor",
+                                        "capabilities": [
+                                                "meter_power",
+                                                "measure_power",
+                                                "measure_current",
+                                                "measure_voltage"
+                                        ]
+                                }, {
+                                        "id": "toggle",
+                                        "capabilities": ["onoff"]
+                                }]
+                        },
+                        "pair": [{
+                                        "id": "start"
+                                },
+                                {
+                                        "id": "list_devices",
+                                        "template": "list_devices",
+                                        "navigation": {
+                                                "next": "add_plugs"
+                                        }
+                                },
+                                {
+                                        "id": "add_plugs",
+                                        "template": "add_devices"
                                 }
+                        ],
+                        "settings": [{
+                                "type": "group",
+                                "label": {
+                                        "en": "General settings",
+                                        "nl": "Algemene instellingen"
+                                },
+                                "children": [{
+                                        "id": "settingIPAddress",
+                                        "type": "text",
+                                        "label": {
+                                                "en": "IP address",
+                                                "nl": "IP adres"
+                                        },
+                                        "value": "0.0.0.0"
+                                }]
                         }]
-                },{
-                        "id": "transitionOff",
-                        "title": {
-                                "en": "Turn bulb off with a transition in brightness.",
-                                "nl": "Uit, geleidelijke afname van helderheid."
+                },
+                {
+                        "id": "lb100",
+                        "name": {
+                                "en": "LB100",
+                                "nl": "LB100"
                         },
-       "hint": {
-          "en": "Turn the bulb off with a transistion in brightness over the entered number of seconds.",
-          "nl": "Schakel de lamp uit met een geleidelijke afname van de helderheid over het opgegeven aantal seconden."
-        },
-                        "args": [{
-                                "name": "device",
-                                "type": "device",
-                                "filter": "driver_id=lb110"
-                        }, {
-                                "name": "transition",
-                                "type": "number",
-                                "min": 1,
-                                "max": 3600,
-                                "placeholder": {
-                                        "en": "Transition time in seconds",
-                                        "nl": "Overgangstijd in seconden"
+                        "images": {
+                                "large": "drivers/lb100/assets/images/large.jpg",
+                                "small": "drivers/lb100/assets/images/small.jpg"
+                        },
+                        "class": "light",
+                        "capabilities": ["onoff", "measure_power", "meter_power", "dim", "light_mode"],
+                        "pair": [{
+                                        "id": "start"
+                                },
+                                {
+                                        "id": "list_devices",
+                                        "template": "list_devices",
+                                        "navigation": {
+                                                "next": "add_plugs"
+                                        }
+                                },
+                                {
+                                        "id": "add_plugs",
+                                        "template": "add_devices"
                                 }
+                        ],
+                        "settings": [{
+                                "type": "group",
+                                "label": {
+                                        "en": "General settings",
+                                        "nl": "Algemene instellingen"
+                                },
+                                "children": [{
+                                        "id": "settingIPAddress",
+                                        "type": "text",
+                                        "label": {
+                                                "en": "IP address",
+                                                "nl": "IP adres"
+                                        },
+                                        "value": "0.0.0.0"
+                                }]
                         }]
-                },{
-                        "id": "circadianModeOn",
-                        "title": {
-                                "en": "Enable circadian mode",
-                                "nl": "Zet circadian mode aan"
+                },
+                {
+                        "id": "lb110",
+                        "name": {
+                                "en": "LB110",
+                                "nl": "LB110"
                         },
-        "hint": {
-          "en": "Enable circadian mode. In this mode the color of the bulb automatically changes during the day.",
-          "nl": "Zet de circadian mode aan. In deze mode veranderd de lamp van kleur in de loop van de dag."
-        },
-                        "args": [{
-                                "name": "device",
-                                "type": "device",
-                                "filter": "driver_id=lb120"
-                        }]
-                },{
-                        "id": "circadianModeOff",
-                        "title": {
-                                "en": "Enable normal mode",
-                                "nl": "Zet normale mode aan"
+                        "images": {
+                                "large": "drivers/lb110/assets/images/large.jpg",
+                                "small": "drivers/lb110/assets/images/small.jpg"
                         },
-        "hint": {
-          "en": "Disable circadian mode and set the bulb to normal mode, it will keep the current colorsetting.",
-          "nl": "Zet de circadian mode uit en zet de lamp in de normale modus, de lamp behoudt dezelfde kleureninstelling."
-        },
-                        "args": [{
-                                "name": "device",
-                                "type": "device",
-                                "filter": "driver_id=lb120"
-                        }]
-                },{
-                        "id": "transitionOn",
-                        "title": {
-                                "en": "Turn bulb on with a transition in brightness.",
-                                "nl": "Aan, geleidelijke toename van helderheid."
-                        },
-       "hint": {
-          "en": "Turn the bulb on with a transistion in brightness over the entered number of seconds.",
-          "nl": "Schakel de lamp aan met een geleidelijke toename van de helderheid over het opgegeven aantal seconden."
-        },
-                        "args": [{
-                                "name": "device",
-                                "type": "device",
-                                "filter": "driver_id=lb120"
-                        }, {
-                                "name": "transition",
-                                "type": "number",
-                                "min": 1,
-                                "max": 3600,
-                                "placeholder": {
-                                        "en": "Transition time in seconds",
-                                        "nl": "Overgangstijd in seconden"
+                        "class": "light",
+                        "capabilities": ["onoff", "measure_power", "meter_power", "dim", "light_mode"],
+                        "pair": [{
+                                        "id": "start"
+                                },
+                                {
+                                        "id": "list_devices",
+                                        "template": "list_devices",
+                                        "navigation": {
+                                                "next": "add_plugs"
+                                        }
+                                },
+                                {
+                                        "id": "add_plugs",
+                                        "template": "add_devices"
                                 }
+                        ],
+                        "settings": [{
+                                "type": "group",
+                                "label": {
+                                        "en": "General settings",
+                                        "nl": "Algemene instellingen"
+                                },
+                                "children": [{
+                                        "id": "settingIPAddress",
+                                        "type": "text",
+                                        "label": {
+                                                "en": "IP address",
+                                                "nl": "IP adres"
+                                        },
+                                        "value": "0.0.0.0"
+                                }]
                         }]
-                },{
-                        "id": "transitionOff",
-                        "title": {
-                                "en": "Turn bulb off with a transition in brightness.",
-                                "nl": "Uit, geleidelijke afname van helderheid."
+                },
+                {
+                        "id": "lb120",
+                        "name": {
+                                "en": "LB120",
+                                "nl": "LB120"
                         },
-       "hint": {
-          "en": "Turn the bulb off with a transistion in brightness over the entered number of seconds.",
-          "nl": "Schakel de lamp uit met een geleidelijke afname van de helderheid over het opgegeven aantal seconden."
-        },
-                        "args": [{
-                                "name": "device",
-                                "type": "device",
-                                "filter": "driver_id=lb120"
-                        }, {
-                                "name": "transition",
-                                "type": "number",
-                                "min": 1,
-                                "max": 3600,
-                                "placeholder": {
-                                        "en": "Transition time in seconds",
-                                        "nl": "Overgangstijd in seconden"
+                        "images": {
+                                "large": "drivers/lb120/assets/images/large.jpg",
+                                "small": "drivers/lb120/assets/images/small.jpg"
+                        },
+                        "class": "light",
+                        "capabilities": ["onoff", "measure_power", "meter_power", "dim", "light_saturation", "light_mode", "light_temperature"],
+                        "pair": [{
+                                        "id": "start"
+                                },
+                                {
+                                        "id": "list_devices",
+                                        "template": "list_devices",
+                                        "navigation": {
+                                                "next": "add_plugs"
+                                        }
+                                },
+                                {
+                                        "id": "add_plugs",
+                                        "template": "add_devices"
                                 }
+                        ],
+                        "settings": [{
+                                "type": "group",
+                                "label": {
+                                        "en": "General settings",
+                                        "nl": "Algemene instellingen"
+                                },
+                                "children": [{
+                                        "id": "settingIPAddress",
+                                        "type": "text",
+                                        "label": {
+                                                "en": "IP address",
+                                                "nl": "IP adres"
+                                        },
+                                        "value": "0.0.0.0"
+                                }]
                         }]
-                },{
-                        "id": "circadianModeOn",
-                        "title": {
-                                "en": "Enable circadian mode",
-                                "nl": "Zet circadian mode aan"
+                },
+                {
+                        "id": "lb130",
+                        "name": {
+                                "en": "LB130",
+                                "nl": "LB130"
                         },
-        "hint": {
-          "en": "Enable circadian mode. In this mode the color of the bulb automatically changes during the day.",
-          "nl": "Zet de circadian mode aan. In deze mode veranderd de lamp van kleur in de loop van de dag."
-        },
-                        "args": [{
-                                "name": "device",
-                                "type": "device",
-                                "filter": "driver_id=lb130"
-                        }]
-                },{
-                        "id": "circadianModeOff",
-                        "title": {
-                                "en": "Enable normal mode",
-                                "nl": "Zet normale mode aan"
+                        "images": {
+                                "large": "drivers/lb130/assets/images/large.jpg",
+                                "small": "drivers/lb130/assets/images/small.jpg"
                         },
-        "hint": {
-          "en": "Disable circadian mode and set the bulb to normal mode, it will keep the current colorsetting.",
-          "nl": "Zet de circadian mode uit en zet de lamp in de normale modus, de lamp behoudt dezelfde kleureninstelling."
-        },
-                        "args": [{
-                                "name": "device",
-                                "type": "device",
-                                "filter": "driver_id=lb130"
-                        }]
-                },{
-                        "id": "transitionOn",
-                        "title": {
-                                "en": "Turn bulb on with a transition in brightness.",
-                                "nl": "Aan, geleidelijke toename van helderheid."
-                        },
-       "hint": {
-          "en": "Turn the bulb on with a transistion in brightness over the entered number of seconds.",
-          "nl": "Schakel de lamp aan met een geleidelijke toename van de helderheid over het opgegeven aantal seconden."
-        },
-                        "args": [{
-                                "name": "device",
-                                "type": "device",
-                                "filter": "driver_id=lb130"
-                        }, {
-                                "name": "transition",
-                                "type": "number",
-                                "min": 1,
-                                "max": 3600,
-                                "placeholder": {
-                                        "en": "Transition time in seconds",
-                                        "nl": "Overgangstijd in seconden"
+                        "class": "light",
+                        "capabilities": ["onoff", "dim", "light_hue", "light_saturation", "light_mode", "light_temperature"],
+                        "pair": [{
+                                        "id": "start"
+                                },
+                                {
+                                        "id": "list_devices",
+                                        "template": "list_devices",
+                                        "navigation": {
+                                                "next": "add_plugs"
+                                        }
+                                },
+                                {
+                                        "id": "add_plugs",
+                                        "template": "add_devices"
                                 }
+                        ],
+                        "settings": [{
+                                "type": "group",
+                                "label": {
+                                        "en": "General settings",
+                                        "nl": "Algemene instellingen"
+                                },
+                                "children": [{
+                                        "id": "settingIPAddress",
+                                        "type": "text",
+                                        "label": {
+                                                "en": "IP address",
+                                                "nl": "IP adres"
+                                        },
+                                        "value": "0.0.0.0"
+                                }]
                         }]
-                },{
-                        "id": "transitionOff",
-                        "title": {
-                                "en": "Turn bulb off with a transition in brightness.",
-                                "nl": "Uit, geleidelijke afname van helderheid."
+                }
+        ],
+        "flow": {
+                "actions": [{
+                                "id": "ledOn",
+                                "title": {
+                                        "en": "Turn LED on",
+                                        "nl": "Zet LED aan"
+                                },
+                                "hint": {
+                                        "en": "Turn the LED on (turn off 'nightmode').",
+                                        "nl": "Zet de LED aan (zet 'nachtmode' uit). "
+                                },
+                                "args": [{
+                                        "name": "device",
+                                        "type": "device",
+                                        "filter": "driver_id=hs100|hs110|hs200"
+                                }]
                         },
-       "hint": {
-          "en": "Turn the bulb off with a transistion in brightness over the entered number of seconds.",
-          "nl": "Schakel de lamp uit met een geleidelijke afname van de helderheid over het opgegeven aantal seconden."
-        },
-                        "args": [{
-                                "name": "device",
-                                "type": "device",
-                                "filter": "driver_id=lb130"
+                        {
+                                "id": "ledOff",
+                                "title": {
+                                        "en": "Turn LED off",
+                                        "nl": "Zet LED uit"
+                                },
+                                "hint": {
+                                        "en": "Turn the LED off ('nightmode'). Use with care, the power remains on!",
+                                        "nl": "Zet de LED uit ('nachtmode'). Let op, de stroom blijft ingeschakeld!"
+                                },
+                                "args": [{
+                                        "name": "device",
+                                        "type": "device",
+                                        "filter": "driver_id=hs100|hs110|hs200"
+                                }]
+                        },
+                        {
+                                "id": "meter_reset",
+                                "title": {
+                                        "en": "Reset meter values",
+                                        "nl": "Meter waarden resetten"
+                                },
+                                "hint": {
+                                        "en": "Reset the accumulated power usage (kWh). Can be reversed with the next action card.",
+                                        "nl": "Reset de stroomverbruik (kWh) waarden. Kan ongedaan gemaakt worden met de volgende kaart."
+                                },
+                                "args": [{
+                                        "name": "device",
+                                        "type": "device",
+                                        "filter": "driver_id=hs110|hs200"
+                                }]
+                        },
+                        {
+                                "id": "undo_meter_reset",
+                                "title": {
+                                        "en": "Undo reset meter values",
+                                        "nl": "Ongedaan maken meter resetten"
+                                },
+                                "hint": {
+                                        "en": "Undo resetting the accumulated power usage (kWh).",
+                                        "nl": "Maak reset van stroomverbruik ongedaan."
+                                },
+                                "args": [{
+                                        "name": "device",
+                                        "type": "device",
+                                        "filter": "driver_id=hs110|hs200"
+                                }]
+                        },
+                        {
+                                "id": "transitionOn",
+                                "title": {
+                                        "en": "Turn bulb on with a transition in brightness.",
+                                        "nl": "Aan, geleidelijke toename van helderheid."
+                                },
+                                "hint": {
+                                        "en": "Turn the bulb on with a transistion in brightness over the entered number of seconds.",
+                                        "nl": "Schakel de lamp aan met een geleidelijke toename van de helderheid over het opgegeven aantal seconden."
+                                },
+                                "args": [{
+                                        "name": "device",
+                                        "type": "device",
+                                        "filter": "driver_id=lb100|lb110|lb120|lb130"
+                                }, {
+                                        "name": "transition",
+                                        "type": "number",
+                                        "min": 1,
+                                        "max": 3600,
+                                        "placeholder": {
+                                                "en": "Transition time in seconds",
+                                                "nl": "Overgangstijd in seconden"
+                                        }
+                                }]
                         }, {
-                                "name": "transition",
-                                "type": "number",
-                                "min": 1,
-                                "max": 3600,
-                                "placeholder": {
-                                        "en": "Transition time in seconds",
-                                        "nl": "Overgangstijd in seconden"
-                                }
-                        }]
-                } 
-	]
-    }
+                                "id": "transitionOff",
+                                "title": {
+                                        "en": "Turn bulb off with a transition in brightness.",
+                                        "nl": "Uit, geleidelijke afname van helderheid."
+                                },
+                                "hint": {
+                                        "en": "Turn the bulb off with a transistion in brightness over the entered number of seconds.",
+                                        "nl": "Schakel de lamp uit met een geleidelijke afname van de helderheid over het opgegeven aantal seconden."
+                                },
+                                "args": [{
+                                        "name": "device",
+                                        "type": "device",
+                                        "filter": "driver_id=lb100|lb110|lb120|lb130"
+                                }, {
+                                        "name": "transition",
+                                        "type": "number",
+                                        "min": 1,
+                                        "max": 3600,
+                                        "placeholder": {
+                                                "en": "Transition time in seconds",
+                                                "nl": "Overgangstijd in seconden"
+                                        }
+                                }]
+                        }, {
+                                "id": "circadianModeOn",
+                                "title": {
+                                        "en": "Enable circadian mode",
+                                        "nl": "Zet circadian mode aan"
+                                },
+                                "hint": {
+                                        "en": "Enable circadian mode. In this mode the color of the bulb automatically changes during the day.",
+                                        "nl": "Zet de circadian mode aan. In deze mode veranderd de lamp van kleur in de loop van de dag."
+                                },
+                                "args": [{
+                                        "name": "device",
+                                        "type": "device",
+                                        "filter": "driver_id=lb120|lb130"
+                                }]
+                        }, {
+                                "id": "circadianModeOff",
+                                "title": {
+                                        "en": "Enable normal mode",
+                                        "nl": "Zet normale mode aan"
+                                },
+                                "hint": {
+                                        "en": "Disable circadian mode and set the bulb to normal mode, it will keep the current colorsetting.",
+                                        "nl": "Zet de circadian mode uit en zet de lamp in de normale modus, de lamp behoudt dezelfde kleureninstelling."
+                                },
+                                "args": [{
+                                        "name": "device",
+                                        "type": "device",
+                                        "filter": "driver_id=lb120|lb130"
+                                }]
+                        }
+                ]
+        }
 }
-

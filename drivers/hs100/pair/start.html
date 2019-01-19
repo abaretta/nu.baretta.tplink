@@ -1,6 +1,6 @@
 <script>
 
-Homey.setTitle( __('pair.start.title') );
+	Homey.setTitle( __('pair.start.title') );
 
 Homey.on('error', function( errortype, callback ){
 
@@ -32,8 +32,8 @@ $('#startdiscovery').on('click', function() {
 
 Homey.on('found', function(data) {
         
-        if (data.id) {
-                $('#ipAddress').val(data.id);
+        if (data.ip) {
+                $('#ipAddress').val(data.ip);
                 $('#deviceName').val(data.name);
         }
         
@@ -46,7 +46,14 @@ function saveSettings () {
 	var inputDeviceName = document.getElementById( 'deviceName' ).value;
 
 	// If required values are filled in
-	// FIXME: should check if this is a real IPv4 address
+        // create Regular Expression that validates for IPv4 addresses, then do the actual test on the input.
+        var Ipv4RegEx = new RegExp ('^(([01]?\\d\\d?|2[0-4]\\d|25[0-5]).){3}([01]?\\d\\d?|2[0-4]\\d|25[0-5])$');
+        var IPInputOK = Ipv4RegEx.test(inputIPAddress);
+ 
+	if (!IPInputOK) {
+                Homey.alert(__('pair.start.invalidIP'), 'error');
+                return;
+        }
 
 	if (inputIPAddress != '') {
 
@@ -72,15 +79,15 @@ function saveSettings () {
 
 </script>
 
-        <div id="discovery" style="display: none">
-                <p data-i18n="pair.start.discovery"></p>
-        </div>
-        <div id="manualpair">
+<div id="discovery" style="display: none">
+	<p data-i18n="pair.start.discovery"></p>
+</div>
+<div id="manualpair">
 
 
-    <p data-i18n="pair.start.intro">enter IP address and name</p>
-    <p>
-                <button class="button" id="startdiscovery" data-i18n="pair.start.startdiscovery">Start discovery</button>
+	<p><span data-i18n="pair.start.intro"></span></p>
+	<p>
+		<button class="button" id="startdiscovery"><span data-i18n="pair.start.startdiscovery"></span></button>
 
 		<style>
 			.pairSettings {
@@ -96,20 +103,21 @@ function saveSettings () {
 
 		<table class="pairSettings">
 			<tr>
-				<td style="width:100px;" data-i18n="pair.start.ipAddress">IP</td>
-				<td><input id="ipAddress" type="text" value="" placeholder="192.168.1.10"/></td>
+				<td style="width:100px;"><span data-i18n="pair.start.ipAddress"></span></td>
+				<td><input id="ipAddress" type="text" pattern="^(([01]?\\d\\d?|2[0-4]\\d|25[0-5]).){3}([01]?\\d\\d?|2[0-4]\\d|25[0-5])$"
+					 value="" placeholder="192.168.1.10" /></td>
 			</tr>
 			<tr>
-				<td style="width:100px;" data-i18n="pair.start.deviceName">Name</td>
-				<td><input id="deviceName" type="text" value="" placeholder="TP Link Plug"/></td>
+				<td style="width:100px;"><span data-i18n="pair.start.deviceName"></span></td>
+				<td><input id="deviceName" type="text" value="" placeholder="TP Link Plug" /></td>
 			</tr>
 		</table>
 
 		<p>
-		&nbsp;
-	  </p>
+			&nbsp;
+		</p>
 
-<fieldset>
-    <button class="button" data-i18n="pair.start.saveSettings" onclick="saveSettings()">Save</button>
-</fieldset>
+		<fieldset>
+			<button class="button" onclick="saveSettings()"><span data-i18n="pair.start.saveSettings"></span></button>
+		</fieldset>
 </div>

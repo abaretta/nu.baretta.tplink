@@ -1,7 +1,12 @@
 # Changelog
 
+**Version 0.1.0**
+- Complete SDK2 rewrite
+- The app will now continue to work when the IP address of the plugs or bulbs changes.
+
 **Version 0.0.17**
-- Bumping version number, submitting for stable release. 
+- Switched to the tplink-smarthome-api (https://github.com/plasticrake/tplink-smarthome-api) to address
+the issues with encryption of newer devices as well as changes in metering.
 
 **Version 0.0.16**
 - Edited app.json. Ready for beta release. 

@@ -1,16 +1,20 @@
 {
       "pair": {
-              "start": {
-              "intro": "Vul het IP adres van de smart plug in, of probeer automatisch te zoeken.",
-              "name": "Naam",
-              "title": "Apparaat zoeken...",
-              "error": "Er is een fout opgetreden.",
-              "required": "IP adres is verplicht.",
-              "ipAddress": "IP adres",
-              "deviceName": "Naam",
-              "saveSettings": "Gegevens opslaan",
-              "discovery": "Zoeken naar nieuwe smart plugs... een moment geduld a.u.b. Zorg dat de smart plug in het stopcontact zit en online is (de LED op de plug is groen). Mocht de gevonden plug al bekend zijn in Homey, click dan nog een keer op de 'Automatisch zoeken' knop.",
-              "startdiscovery": "Automatisch zoeken"
-                       }
-              }
+            "start": {
+                  "intro": "Vul het IP adres van de smart plug in, of probeer automatisch te zoeken.",
+                  "name": "Naam",
+                  "title": "Apparaat zoeken...",
+                  "error": "Er is een fout opgetreden.",
+                  "nosettings": "Instellingen ontbreken",
+                  "required": "IP adres moet ingevuld zijn.",
+                  "ipAddress": "IP adres",
+                  "invalidIP": "Incorrect IP adres",
+                  "deviceName": "Naam",
+                  "optional": "De volgende setting is optioneel:",
+                  "totalOffset": "Correctie van totaal stroomverbruik",
+                  "saveSettings": "Gegevens opslaan",
+                  "discovery": "Zoeken naar nieuwe smart plugs... een moment geduld a.u.b. Zorg dat de smart plug in het stopcontact zit en online is (de LED op de plug is groen). Mocht de gevonden plug al bekend zijn in Homey, click dan nog een keer op de 'Automatisch zoeken' knop.",
+                  "startdiscovery": "Automatisch zoeken"
+            }
+      }
 }

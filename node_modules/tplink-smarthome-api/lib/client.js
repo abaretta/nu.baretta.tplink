@@ -1,0 +1,799 @@
+'use strict';
+
+function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
+
+function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
+
+const dgram = require('dgram');
+
+const net = require('net');
+
+const EventEmitter = require('events');
+
+const _require = require('tplink-smarthome-crypto'),
+      encrypt = _require.encrypt,
+      encryptWithHeader = _require.encryptWithHeader,
+      decrypt = _require.decrypt;
+
+const Device = require('./device');
+
+const Plug = require('./plug');
+
+const Bulb = require('./bulb');
+
+const _require2 = require('./utils'),
+      compareMac = _require2.compareMac;
+
+const discoveryMsgBuf = encrypt('{"system":{"get_sysinfo":{}}}');
+let maxSocketId = 0;
+/**
+ * Send Options.
+ *
+ * @typedef {Object} SendOptions
+ * @property {number} timeout  (ms)
+ * @property {string} transport 'tcp','udp'
+ */
+
+/**
+ * Client that sends commands to specified devices or discover devices on the local subnet.
+ * - Contains factory methods to create devices.
+ * - Events are emitted after {@link #startDiscovery} is called.
+ * @extends EventEmitter
+ */
+
+class Client extends EventEmitter {
+  /**
+   * @param  {Object}       options
+   * @param  {SendOptions} [options.defaultSendOptions]
+   * @param  {Number}      [options.defaultSendOptions.timeout=10000]  (ms)
+   * @param  {string}      [options.defaultSendOptions.transport=tcp] 'tcp' or 'udp'
+   * @param  {string}      [options.logLevel]       level for built in logger ['error','warn','info','debug','trace']
+   */
+  constructor({
+    defaultSendOptions = {
+      timeout: 10000,
+      transport: 'tcp'
+    },
+    logLevel,
+    logger
+  } = {}) {
+    super();
+    this.defaultSendOptions = defaultSendOptions;
+    this.log = require('./logger')({
+      level: logLevel,
+      logger: logger
+    });
+    this.devices = new Map();
+    this.discoveryTimer = null;
+    this.discoveryPacketSequence = 0;
+  }
+  /**
+   * {@link https://github.com/plasticrake/tplink-smarthome-crypto Encrypts} `payload` and sends to device.
+   * - If `payload` is not a string, it is `JSON.stringify`'d.
+   * - Promise fulfills with parsed JSON response.
+   *
+   * Devices use JSON to communicate.\
+   * For Example:
+   * - If a device receives:
+   *   - `{"system":{"get_sysinfo":{}}}`
+   * - It responds with:
+   *   - `{"system":{"get_sysinfo":{
+   *       err_code: 0,
+   *       sw_ver: "1.0.8 Build 151113 Rel.24658",
+   *       hw_ver: "1.0",
+   *       ...
+   *     }}}`
+   *
+   * All responses from device contain an `err_code` (`0` is success).
+   *
+   * @param  {Object|string}  payload
+   * @param  {string}         host
+   * @param  {number}        [port=9999]
+   * @param  {SendOptions}   [sendOptions]
+   * @return {Promise<Object, Error>}
+   */
+
+
+  send(payload, host, port = 9999, sendOptions) {
+    var _this = this;
+
+    return _asyncToGenerator(function* () {
+      const thisSendOptions = Object.assign({}, _this.defaultSendOptions, sendOptions);
+
+      if (thisSendOptions.transport === 'udp') {
+        return _this.sendUdp(payload, host, port, thisSendOptions.timeout);
+      }
+
+      return _this.sendTcp(payload, host, port, thisSendOptions.timeout);
+    })();
+  }
+  /**
+   * @private
+   */
+
+
+  sendUdp(payload, host, port = 9999, timeout) {
+    var _this2 = this;
+
+    return _asyncToGenerator(function* () {
+      let socketId = maxSocketId += 1;
+
+      _this2.log.debug(`[${socketId}] client.sendUdp(%j)`, {
+        payload,
+        host,
+        port,
+        timeout
+      });
+
+      return new Promise((resolve, reject) => {
+        let socket;
+        let isSocketBound = false;
+
+        try {
+          const payloadString = !(typeof payload === 'string' || payload instanceof String) ? JSON.stringify(payload) : payload;
+          socket = dgram.createSocket('udp4');
+          let timer;
+
+          if (timeout > 0) {
+            timer = setTimeout(() => {
+              _this2.log.debug(`[${socketId}] client.sendUdp(): timeout(${timeout})`);
+
+              _this2.log.error('UDP Timeout');
+
+              if (isSocketBound) socket.close();
+              reject(new Error('UDP Timeout'));
+            }, timeout);
+          }
+
+          socket.on('message', (msg, rinfo) => {
+            clearTimeout(timer);
+
+            _this2.log.debug(`[${socketId}] client.sendUdp(): socket:data %j`, rinfo);
+
+            if (isSocketBound) socket.close();
+            let decryptedMsg;
+
+            try {
+              decryptedMsg = decrypt(msg).toString('utf8');
+
+              _this2.log.debug(`[${socketId}] client.sendUdp(): socket:data message: ${decryptedMsg}`);
+
+              let msgObj = '';
+
+              if (decryptedMsg !== '') {
+                msgObj = JSON.parse(decryptedMsg);
+              }
+
+              resolve(msgObj);
+            } catch (err) {
+              _this2.log.error('Error parsing JSON: %s\nFrom: [%s UDP] Original: [%s] Decrypted: [%s]', err, rinfo, msg, decryptedMsg);
+
+              reject(err);
+            }
+          });
+          socket.on('error', err => {
+            _this2.log.debug(`[${socketId}] client.sendUdp(): socket:error`, err);
+
+            if (isSocketBound) socket.close();
+            reject(err);
+          });
+
+          _this2.log.debug(`[${socketId}] client.sendUdp(): attempting to open. host:${host}, port:${port}`);
+
+          socket.bind(() => {
+            isSocketBound = true;
+
+            _this2.log.debug(`[${socketId}] client.sendUdp(): listening on %j`, socket.address());
+
+            const msgBuf = encrypt(payloadString);
+            socket.send(msgBuf, 0, msgBuf.length, port, host);
+          });
+        } catch (err) {
+          _this2.log.error(`UDP Error: %s`, err);
+
+          if (isSocketBound) socket.close();
+          reject(err);
+        }
+      });
+    })();
+  }
+  /**
+   * @private
+   */
+
+
+  sendTcp(payload, host, port = 9999, timeout) {
+    let socketId = maxSocketId += 1;
+    this.log.debug(`[${socketId}] client.sendTcp(%j)`, {
+      payload,
+      host,
+      port,
+      timeout
+    });
+    return new Promise((resolve, reject) => {
+      let socket;
+      let timer;
+      let deviceDataBuf;
+      let segmentCount = 0;
+
+      try {
+        const payloadString = !(typeof payload === 'string' || payload instanceof String) ? JSON.stringify(payload) : payload;
+        socket = new net.Socket();
+
+        if (timeout > 0) {
+          timer = setTimeout(() => {
+            this.log.debug(`[${socketId}] client.sendTcp(): timeout(${timeout})`);
+            this.log.error('TCP Timeout');
+            socket.destroy();
+            reject(new Error('TCP Timeout'));
+          }, timeout);
+        }
+
+        socket.on('data', data => {
+          segmentCount += 1;
+          this.log.debug(`[${socketId}] client.sendTcp(): socket:data ${socket.remoteAddress}:${socket.remotePort} segment:${segmentCount}`);
+
+          if (deviceDataBuf === undefined) {
+            deviceDataBuf = data;
+          } else {
+            deviceDataBuf = Buffer.concat([deviceDataBuf, data], deviceDataBuf.length + data.length);
+          }
+
+          const expectedMsgLen = deviceDataBuf.slice(0, 4).readInt32BE();
+          const actualMsgLen = deviceDataBuf.length - 4;
+
+          if (actualMsgLen >= expectedMsgLen) {
+            socket.end();
+          }
+        });
+        socket.on('close', () => {
+          this.log.debug(`[${socketId}] client.sendTcp(): socket:close`);
+          clearTimeout(timer);
+          if (deviceDataBuf == null) return;
+          const expectedMsgLen = deviceDataBuf.slice(0, 4).readInt32BE();
+          const actualMsgLen = deviceDataBuf.length - 4;
+
+          if (actualMsgLen >= expectedMsgLen) {
+            let decryptedMsg;
+
+            try {
+              decryptedMsg = decrypt(deviceDataBuf.slice(4)).toString('utf8');
+              this.log.debug(`[${socketId}] client.sendTcp(): socket:close message: ${decryptedMsg}`);
+              let msgObj = '';
+
+              if (decryptedMsg !== '') {
+                msgObj = JSON.parse(decryptedMsg);
+              }
+
+              resolve(msgObj);
+            } catch (err) {
+              this.log.error(`Error parsing JSON: %s\nFrom: [${socket.remoteAddress} ${socket.remotePort}] TCP ${segmentCount} ${actualMsgLen}/${expectedMsgLen} Original: [%s] Decrypted: [${decryptedMsg}]`, err, deviceDataBuf);
+              reject(err);
+            }
+          }
+        });
+        socket.on('error', err => {
+          this.log.debug(`[${socketId}] client.sendTcp(): socket:error`);
+          socket.destroy();
+          reject(err);
+        });
+        this.log.debug(`[${socketId}] client.sendTcp(): attempting to open. host:${host}, port:${port}`);
+        socket.connect({
+          port,
+          host
+        }, () => {
+          this.log.debug(`[${socketId}] client.sendTcp(): socket:connect ${socket.remoteAddress} ${socket.remotePort}`);
+          socket.write(encryptWithHeader(payloadString));
+        });
+      } catch (err) {
+        clearTimeout(timer);
+        this.log.error(`TCP Error: ${err}`);
+        socket.destroy();
+        reject(err);
+      }
+    });
+  }
+  /**
+   * Requests `{system:{get_sysinfo:{}}}` from device.
+   *
+   * @param  {string}       host
+   * @param  {number}      [port=9999]
+   * @param  {SendOptions} [sendOptions]
+   * @return {Promise<Object, Error>} parsed JSON response
+   */
+
+
+  getSysInfo(host, port = 9999, sendOptions) {
+    var _this3 = this;
+
+    return _asyncToGenerator(function* () {
+      _this3.log.debug('client.getSysInfo(%j)', {
+        host,
+        port,
+        sendOptions
+      });
+
+      const data = yield _this3.send('{"system":{"get_sysinfo":{}}}', host, port, sendOptions);
+      return data.system.get_sysinfo;
+    })();
+  }
+  /**
+   * @private
+   */
+
+
+  emit(eventName, ...args) {
+    // Add device- / plug- / bulb- to eventName
+    if (args[0] instanceof Device) {
+      super.emit('device-' + eventName, ...args);
+
+      if (args[0].deviceType !== 'device') {
+        super.emit(args[0].deviceType + '-' + eventName, ...args);
+      }
+    } else {
+      super.emit(eventName, ...args);
+    }
+  }
+  /**
+   * Creates Bulb object.
+   *
+   * See [Device constructor]{@link Device} and [Bulb constructor]{@link Bulb} for valid options.
+   * @param  {Object} deviceOptions passed to [Bulb constructor]{@link Bulb}
+   * @return {Bulb}
+   */
+
+
+  getBulb(deviceOptions) {
+    return new Bulb(Object.assign({}, deviceOptions, {
+      client: this,
+      defaultSendOptions: this.defaultSendOptions
+    }));
+  }
+  /**
+   * Creates {@link Plug} object.
+   *
+   * See [Device constructor]{@link Device} and [Plug constructor]{@link Plug} for valid options.
+   * @param  {Object} deviceOptions passed to [Plug constructor]{@link Plug}
+   * @return {Plug}
+   */
+
+
+  getPlug(deviceOptions) {
+    return new Plug(Object.assign({}, deviceOptions, {
+      client: this,
+      defaultSendOptions: this.defaultSendOptions
+    }));
+  }
+  /**
+   * Creates a {@link Plug} or {@link Bulb} after querying device to determine type.
+   *
+   * See [Device constructor]{@link Device}, [Bulb constructor]{@link Bulb}, [Plug constructor]{@link Plug} for valid options.
+   * @param  {Object}      deviceOptions passed to [Device constructor]{@link Device}
+   * @param  {SendOptions} [sendOptions]
+   * @return {Promise<Plug|Bulb, Error>}
+   */
+
+
+  getDevice(deviceOptions, sendOptions) {
+    var _this4 = this;
+
+    return _asyncToGenerator(function* () {
+      const sysInfo = yield _this4.getSysInfo(deviceOptions.host, deviceOptions.port, sendOptions);
+      return _this4.getDeviceFromSysInfo(sysInfo, Object.assign({}, deviceOptions, {
+        client: _this4
+      }));
+    })();
+  }
+  /**
+   * Create {@link Device} object.
+   * - Device object only supports common Device methods.
+   * - See [Device constructor]{@link Device} for valid options.
+   * - Instead use {@link #getDevice} to create a fully featured object.
+   * @param  {Object} deviceOptions passed to [Device constructor]{@link Device}
+   * @return {Device}
+   */
+
+
+  getCommonDevice(deviceOptions) {
+    return new Device(Object.assign({}, deviceOptions, {
+      client: this,
+      defaultSendOptions: this.defaultSendOptions
+    }));
+  }
+  /**
+   * @private
+   */
+
+
+  getDeviceFromType(typeName, deviceOptions) {
+    if (typeof typeName === 'function') {
+      typeName = typeName.name;
+    }
+
+    switch (typeName.toLowerCase()) {
+      case 'plug':
+        return this.getPlug(deviceOptions);
+
+      case 'bulb':
+        return this.getBulb(deviceOptions);
+
+      default:
+        return this.getPlug(deviceOptions);
+    }
+  }
+  /**
+   * Creates device corresponding to the provided `sysInfo`.
+   *
+   * See [Device constructor]{@link Device}, [Bulb constructor]{@link Bulb}, [Plug constructor]{@link Plug} for valid options
+   * @param  {Object} sysInfo
+   * @param  {Object} deviceOptions passed to device constructor
+   * @return {Plug|Bulb}
+   */
+
+
+  getDeviceFromSysInfo(sysInfo, deviceOptions) {
+    const thisDeviceOptions = Object.assign({}, deviceOptions, {
+      sysInfo: sysInfo
+    });
+
+    switch (this.getTypeFromSysInfo(sysInfo)) {
+      case 'plug':
+        return this.getPlug(thisDeviceOptions);
+
+      case 'bulb':
+        return this.getBulb(thisDeviceOptions);
+
+      default:
+        return this.getPlug(thisDeviceOptions);
+    }
+  }
+  /**
+   * Guess the device type from provided `sysInfo`.
+   *
+   * Based on sys_info.[type|mic_type]
+   * @param  {Object} sysInfo
+   * @return {string}         'plug','bulb','device'
+   */
+
+
+  getTypeFromSysInfo(sysInfo) {
+    const type = sysInfo.type || sysInfo.mic_type || '';
+
+    switch (true) {
+      case /plug/i.test(type):
+        return 'plug';
+
+      case /bulb/i.test(type):
+        return 'bulb';
+
+      default:
+        return 'device';
+    }
+  }
+  /**
+   * First response from device.
+   * @event Client#device-new
+   * @property {Device|Bulb|Plug}
+   */
+
+  /**
+   * Follow up response from device.
+   * @event Client#device-online
+   * @property {Device|Bulb|Plug}
+   */
+
+  /**
+   * No response from device.
+   * @event Client#device-offline
+   * @property {Device|Bulb|Plug}
+   */
+
+  /**
+   * First response from Bulb.
+   * @event Client#bulb-new
+   * @property {Bulb}
+   */
+
+  /**
+   * Follow up response from Bulb.
+   * @event Client#bulb-online
+   * @property {Bulb}
+   */
+
+  /**
+   * No response from Bulb.
+   * @event Client#bulb-offline
+   * @property {Bulb}
+   */
+
+  /**
+   * First response from Plug.
+   * @event Client#plug-new
+   * @property {Plug}
+   */
+
+  /**
+   * Follow up response from Plug.
+   * @event Client#plug-online
+   * @property {Plug}
+   */
+
+  /**
+   * No response from Plug.
+   * @event Client#plug-offline
+   * @property {Plug}
+   */
+
+  /**
+   * Invalid/Unknown response from device.
+   * @event Client#discovery-invalid
+   * @property {Object} rinfo
+   * @property {Buffer} response
+   * @property {Buffer} decryptedResponse
+   */
+
+  /**
+   * Error during discovery.
+   * @event Client#error
+   * @type {Object}
+   * @property {Error}
+   */
+
+  /**
+   * Discover TP-Link Smarthome devices on the network.
+   *
+   * - Sends a discovery packet (via UDP) to the `broadcast` address every `discoveryInterval`(ms).
+   * - Stops discovery after `discoveryTimeout`(ms) (if `0`, runs until {@link #stopDiscovery} is called).
+   *   - If a device does not respond after `offlineTolerance` number of attempts, {@link event:Client#device-offline} is emitted.
+   * - If `deviceTypes` are specified only matching devices are found.
+   * - If `macAddresses` are specified only devices with matching MAC addresses are found.
+   * - If `excludeMacAddresses` are specified devices with matching MAC addresses are excluded.
+   * - if `filterCallback` is specified only devices where the callback returns a truthy value are found.
+   * - If `devices` are specified it will attempt to contact them directly in addition to sending to the broadcast address.
+   *   - `devices` are specified as an array of `[{host, [port: 9999]}]`.
+   * @param  {Object}    options
+   * @param  {string}   [options.address]                     address to bind udp socket
+   * @param  {number}   [options.port]                        port to bind udp socket
+   * @param  {string}   [options.broadcast=255.255.255.255]   broadcast address
+   * @param  {number}   [options.discoveryInterval=10000]     (ms)
+   * @param  {number}   [options.discoveryTimeout=0]          (ms)
+   * @param  {number}   [options.offlineTolerance=3]          # of consecutive missed replies to consider offline
+   * @param  {string[]} [options.deviceTypes]                 'plug','bulb'
+   * @param  {string[]} [options.macAddresses]                MAC will be normalized, comparison will be done after removing special characters (`:`,`-`, etc.) and case insensitive, glob style *, and ? in pattern are supported
+   * @param  {string[]} [options.excludeMacAddresses]         MAC will be normalized, comparison will be done after removing special characters (`:`,`-`, etc.) and case insensitive, glob style *, and ? in pattern are supported
+   * @param  {function} [options.filterCallback]              called with fn(sysInfo), return truthy value to include device
+   * @param  {boolean}  [options.breakoutChildren=true]       if device has multiple outlets, create a separate plug for each outlet, otherwise create a plug for the main device
+   * @param  {Object}   [options.deviceOptions={}]            passed to device constructors
+   * @param  {Object[]} [options.devices]                     known devices to query instead of relying on broadcast
+   * @return {Client}                                         this
+   * @emits  Client#error
+   * @emits  Client#device-new
+   * @emits  Client#device-online
+   * @emits  Client#device-offline
+   * @emits  Client#bulb-new
+   * @emits  Client#bulb-online
+   * @emits  Client#bulb-offline
+   * @emits  Client#plug-new
+   * @emits  Client#plug-online
+   * @emits  Client#plug-offline
+   */
+
+
+  startDiscovery({
+    address,
+    port,
+    broadcast = '255.255.255.255',
+    discoveryInterval = 10000,
+    discoveryTimeout = 0,
+    offlineTolerance = 3,
+    deviceTypes,
+    macAddresses = [],
+    excludeMacAddresses = [],
+    filterCallback,
+    breakoutChildren = true,
+    deviceOptions = {},
+    devices
+  } = {}) {
+    this.log.debug('client.startDiscovery(%j)', arguments[0]);
+
+    try {
+      this.socket = dgram.createSocket('udp4');
+      this.socket.on('message', (msg, rinfo) => {
+        const decryptedMsg = decrypt(msg).toString('utf8');
+        this.log.debug(`client.startDiscovery(): socket:message From: ${rinfo.address} ${rinfo.port} Message: ${decryptedMsg}`);
+        let jsonMsg;
+        let sysInfo;
+
+        try {
+          jsonMsg = JSON.parse(decryptedMsg);
+          sysInfo = jsonMsg.system.get_sysinfo;
+        } catch (err) {
+          this.log.debug(`client.startDiscovery(): Error parsing JSON: %s\nFrom: ${rinfo.address} ${rinfo.port} Original: [%s] Decrypted: [${decryptedMsg}]`, err, msg);
+          this.emit('discovery-invalid', {
+            rinfo,
+            response: msg,
+            decryptedResponse: decrypt(msg)
+          });
+          return;
+        }
+
+        if (deviceTypes && deviceTypes.length > 0) {
+          const deviceType = this.getTypeFromSysInfo(sysInfo);
+
+          if (deviceTypes.indexOf(deviceType) === -1) {
+            this.log.debug(`client.startDiscovery(): Filtered out: ${sysInfo.alias} [${sysInfo.deviceId}] (${deviceType}), allowed device types: (%j)`, deviceTypes);
+            return;
+          }
+        }
+
+        if (macAddresses && macAddresses.length > 0) {
+          const mac = sysInfo.mac || sysInfo.mic_mac || sysInfo.ethernet_mac || '';
+
+          if (!compareMac(mac, macAddresses)) {
+            this.log.debug(`client.startDiscovery(): Filtered out: ${sysInfo.alias} [${sysInfo.deviceId}] (${mac}), allowed macs: (%j)`, macAddresses);
+            return;
+          }
+        }
+
+        if (excludeMacAddresses && excludeMacAddresses.length > 0) {
+          const mac = sysInfo.mac || sysInfo.mic_mac || sysInfo.ethernet_mac || '';
+
+          if (compareMac(mac, excludeMacAddresses)) {
+            this.log.debug(`client.startDiscovery(): Filtered out: ${sysInfo.alias} [${sysInfo.deviceId}] (${mac}), excluded mac`);
+            return;
+          }
+        }
+
+        if (typeof filterCallback === 'function') {
+          if (!filterCallback(sysInfo)) {
+            this.log.debug(`client.startDiscovery(): Filtered out: ${sysInfo.alias} [${sysInfo.deviceId}], callback`);
+            return;
+          }
+        }
+
+        this.createOrUpdateDeviceFromSysInfo({
+          sysInfo,
+          host: rinfo.address,
+          port: rinfo.port,
+          breakoutChildren,
+          options: deviceOptions
+        });
+      });
+      this.socket.on('error', err => {
+        this.log.error('client.startDiscovery: UDP Error: %s', err);
+        this.stopDiscovery();
+        this.emit('error', err); // TODO
+      });
+      this.socket.bind(port, address, () => {
+        this.isSocketBound = true;
+        const address = this.socket.address();
+        this.log.debug(`client.socket: UDP ${address.family} listening on ${address.address}:${address.port}`);
+        this.socket.setBroadcast(true);
+        this.discoveryTimer = setInterval(() => {
+          this.sendDiscovery(broadcast, devices, offlineTolerance);
+        }, discoveryInterval);
+        this.sendDiscovery(broadcast, devices, offlineTolerance);
+
+        if (discoveryTimeout > 0) {
+          setTimeout(() => {
+            this.log.debug('client.startDiscovery: discoveryTimeout reached, stopping discovery');
+            this.stopDiscovery();
+          }, discoveryTimeout);
+        }
+      });
+    } catch (err) {
+      this.log.error('client.startDiscovery: %s', err);
+      this.emit('error', err);
+    }
+
+    return this;
+  }
+  /**
+   * @private
+   */
+
+
+  createOrUpdateDeviceFromSysInfo({
+    sysInfo,
+    host,
+    port,
+    options,
+    breakoutChildren
+  }) {
+    const process = (sysInfo, id, childId) => {
+      if (this.devices.has(id)) {
+        const device = this.devices.get(id);
+        device.host = host;
+        device.port = port;
+        device.sysInfo = sysInfo;
+        device.status = 'online';
+        device.seenOnDiscovery = this.discoveryPacketSequence;
+        this.emit('online', device);
+      } else {
+        const deviceOptions = Object.assign({}, options, {
+          client: this,
+          host,
+          port,
+          childId
+        });
+        const device = this.getDeviceFromSysInfo(sysInfo, deviceOptions); // device.sysInfo = sysInfo;
+
+        device.status = 'online';
+        device.seenOnDiscovery = this.discoveryPacketSequence;
+        this.devices.set(id, device);
+        this.emit('new', device);
+      }
+    };
+
+    if (breakoutChildren && sysInfo.children && sysInfo.children.length > 0) {
+      sysInfo.children.forEach(child => {
+        const childId = child.id.length === 2 ? sysInfo.deviceId + child.id : child.id;
+        process(sysInfo, childId, childId);
+      });
+    } else {
+      process(sysInfo, sysInfo.deviceId);
+    }
+  }
+  /**
+   * Stops discovery and closes UDP socket.
+   */
+
+
+  stopDiscovery() {
+    this.log.debug('client.stopDiscovery()');
+    clearInterval(this.discoveryTimer);
+    this.discoveryTimer = null;
+
+    if (this.isSocketBound) {
+      this.isSocketBound = false;
+      this.socket.close();
+    }
+  }
+  /**
+   * @private
+   */
+
+
+  sendDiscovery(address, devices, offlineTolerance) {
+    this.log.debug('client.sendDiscovery(%s, %j, %s)', arguments[0], arguments[1], arguments[2]);
+
+    try {
+      devices = devices || [];
+      this.devices.forEach(device => {
+        if (device.status !== 'offline') {
+          const diff = this.discoveryPacketSequence - device.seenOnDiscovery;
+
+          if (diff >= offlineTolerance) {
+            device.status = 'offline';
+            this.emit('offline', device);
+          }
+        }
+      }); // sometimes there is a race condition with setInterval where this is called after it was cleared
+      // check and exit
+
+      if (!this.isSocketBound) {
+        return;
+      }
+
+      this.socket.send(discoveryMsgBuf, 0, discoveryMsgBuf.length, 9999, address);
+      devices.forEach(d => {
+        this.log.debug('client.sendDiscovery() direct device:', d);
+        this.socket.send(discoveryMsgBuf, 0, discoveryMsgBuf.length, d.port || 9999, d.host);
+      });
+
+      if (this.discoveryPacketSequence >= Number.MAX_VALUE) {
+        this.discoveryPacketSequence = 0;
+      } else {
+        this.discoveryPacketSequence += 1;
+      }
+    } catch (err) {
+      this.log.error('client.sendDiscovery: %s', err);
+      this.emit('error', err);
+    }
+
+    return this;
+  }
+
+}
+
+module.exports = Client;
