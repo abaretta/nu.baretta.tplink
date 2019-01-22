@@ -30,7 +30,7 @@ class TPlinkPlugDevice extends Homey.Device {
         this.log('settings totalOffset: ', settings["totalOffset"])
         totalOffset = settings["totalOffset"];
 
-        if ( settings["deviceId" == 'undefined']) {
+        if (settings["deviceId"] === 'undefined') {
             try {
                 this.plug = client.getPlug({
                     host: settings["settingIPAddress"]

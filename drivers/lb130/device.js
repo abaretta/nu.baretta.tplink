@@ -61,12 +61,13 @@ class TPlinkBulbDevice extends Homey.Device {
         this.log('settings totalOffset: ', settings["totalOffset"])
         //totalOffset = settings["totalOffset"];
 
-        if (settings["deviceId" == 'undefined']) {
+        if (settings["deviceId"] === 'undefined') {
             try {
                 this.bulb = client.getBulb({
                     host: settings["settingIPAddress"]
                 });
                 this.bulb.getSysInfo().then((info) => {
+                    this.log("Fetched bulb deviceId: " + info.deviceId);
                     this.setSettings({
                         deviceId: info.deviceId
                     }).catch(this.error);
@@ -119,7 +120,7 @@ class TPlinkBulbDevice extends Homey.Device {
                 let settings = this.getSettings();
                 let device = settings["settingIPAddress"];
                 this.log("Flow card action transitionOn ip: " + device);
-                this.onTransition(device,transition);
+                this.onTransition(device, transition);
                 return Promise.resolve(true);
             });
 
@@ -130,7 +131,7 @@ class TPlinkBulbDevice extends Homey.Device {
                 let settings = this.getSettings();
                 let device = settings["settingIPAddress"];
                 this.log("Flow card action transitionOff ip: " + device);
-                this.offTransition(device,transition);
+                this.offTransition(device, transition);
                 return Promise.resolve(true);
             });
 
