@@ -233,7 +233,8 @@ class TPlinkPlugDevice extends Homey.Device {
             host: device
         });
         this.plug.setLedState(true);
-        this.setCapabilityValue('ledonoff', true);
+        this.setCapabilityValue('ledonoff', true)
+            .catch(this.error);
     }
 
     ledOff(device) {
@@ -242,7 +243,8 @@ class TPlinkPlugDevice extends Homey.Device {
             host: device
         });
         this.plug.setLedState(false);
-        this.setCapabilityValue('ledonoff', false);
+        this.setCapabilityValue('ledonoff', false)
+            .catch(this.error);
     }
 
     meter_reset(device) {
@@ -290,17 +292,20 @@ class TPlinkPlugDevice extends Homey.Device {
 
                 if (data.sysInfo.relay_state === 1) {
                     this.log('Relay state on ');
-                    this.setCapabilityValue('onoff', true);
+                    this.setCapabilityValue('onoff', true)
+                        .catch(this.error);
                 } else {
                     this.log('Relay state off ');
-                    this.setCapabilityValue('onoff', false);
+                    this.setCapabilityValue('onoff', false)
+                        .catch(this.error);
                 }
 
                 // update realtime data only in case it changed
 
                 if (oldtotalState != corrected_total) {
                     this.log("Total - Offset: " + corrected_total);
-                    this.setCapabilityValue('meter_power', corrected_total);
+                    this.setCapabilityValue('meter_power', corrected_total)
+                        .catch(this.error);
                 }
                 /*
                 if (oldonoffState != data.sysInfo.relay_state) {
@@ -311,15 +316,18 @@ class TPlinkPlugDevice extends Homey.Device {
                 */
                 if (oldpowerState != data.emeter.realtime.power) {
                     this.log('Power changed: ' + data.emeter.realtime.power);
-                    this.setCapabilityValue('measure_power', data.emeter.realtime.power);
+                    this.setCapabilityValue('measure_power', data.emeter.realtime.power)
+                        .catch(this.error);
                 }
                 if (oldvoltageState != data.emeter.realtime.voltage) {
                     this.log('Voltage changed: ' + data.emeter.realtime.voltage);
-                    this.setCapabilityValue('measure_voltage', data.emeter.realtime.voltage);
+                    this.setCapabilityValue('measure_voltage', data.emeter.realtime.voltage)
+                        .catch(this.error);
                 }
                 if (oldcurrentState != data.emeter.realtime.current) {
                     this.log('Current changed: ' + data.emeter.realtime.current);
-                    this.setCapabilityValue('measure_current', data.emeter.realtime.current);
+                    this.setCapabilityValue('measure_current', data.emeter.realtime.current)
+                        .catch(this.error);
                 }
             })
             .catch((err) => {

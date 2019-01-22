@@ -278,7 +278,8 @@ class TPlinkBulbDevice extends Homey.Device {
         this.log('Setting light mode of ' + device + ' to ' + value);
         //   Someone touched one of the 'mode' icons: turn on device' 
         this.powerOn(device);
-        this.setCapabilityValue('light_mode', value);
+        this.setCapabilityValue('light_mode', value)
+            .catch(this.error);
         // Then, emit a callback ( err, result )
         callback(null, value);
     }
@@ -525,7 +526,8 @@ class TPlinkBulbDevice extends Homey.Device {
                     this.log('getLightState: ' + JSON.stringify(bulbState));
                     if (bulbState.on_off === 1) {
                         this.log('TP Link smartbulb app - bulb on ');
-                        this.setCapabilityValue('onoff', true);
+                        this.setCapabilityValue('onoff', true)
+                            .catch(this.error);
 
                         if (bulbState.color_temp == 0) {
                             var new_light_temperature = 0
@@ -535,22 +537,26 @@ class TPlinkBulbDevice extends Homey.Device {
 
                         if (oldColorTemp != new_light_temperature) {
                             this.log('ColorTemp changed: ' + new_light_temperature);
-                            this.setCapabilityValue('light_temperature', new_light_temperature);
+                            this.setCapabilityValue('light_temperature', new_light_temperature)
+                                .catch(this.error);
                         }
 
                         if (oldHue != this.round((bulbState.hue / 360), 2)) {
                             this.log('Hue changed: ' + this.round((bulbState.hue / 360), 2));
-                            this.setCapabilityValue('light_hue', this.round((bulbState.hue / 360), 2));
+                            this.setCapabilityValue('light_hue', this.round((bulbState.hue / 360), 2))
+                                .catch(this.error);
                         }
 
                         if (oldSaturation != bulbState.saturation / 100) {
                             this.log('Saturation changed: ' + bulbState.saturation);
-                            this.setCapabilityValue('light_saturation', bulbState.saturation / 100);
+                            this.setCapabilityValue('light_saturation', bulbState.saturation / 100)
+                                .catch(this.error);
                         }
 
                         if (oldBrightness != bulbState.brightness / 100) {
                             this.log('Brightness changed: ' + bulbState.brightness / 100);
-                            this.setCapabilityValue('dim', bulbState.brightness / 100);
+                            this.setCapabilityValue('dim', bulbState.brightness / 100)
+                                .catch(this.error);
                         }
 
                         if (oldMode != this.getCapabilityValue('light_mode')) {
@@ -579,7 +585,8 @@ class TPlinkBulbDevice extends Homey.Device {
                         */
                     } else if (bulbState.on_off === 0) {
                         this.log('Bulb off ');
-                        this.setCapabilityValue('onoff', false);
+                        this.setCapabilityValue('onoff', false)
+                            .catch(this.error);
                     } else {
                         this.log("BulbState.on_off undefined")
                     }
