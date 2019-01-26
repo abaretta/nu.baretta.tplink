@@ -2,7 +2,8 @@
 
 **Version 0.1.2**
 - Bugfixes, 'dynamic' ip feature is now an option that can be enabled in the settings.
-- The number of discovery attempts is limited to 10 to prevent a runaway discovery process.
+- Changed to discovery process, now using some of the builtin options.
+- The number of discovery attempts is limited to 3 at 2,5 s intervals and a timeout of 9 seconds. 
 
 **Version 0.1.1**
 - Bugfixes 

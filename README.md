@@ -1,6 +1,8 @@
 # TP-Link Smart Plug and Bulb (WIFI) app for Athom Homey
 
-This app lets you control TP-Link Smart Plugs HS100 (plug with no energy monitoring) HS110 (plug with energy monitoring) and Smart Bulbs LB100, LB110, LB120 and LB130 from within flows and the (mobile) app. The HS200 Smart Switch is as of yet untested but should work as well (please let me know ;-) The same goes for the HS115 mini plug, this should work with the HS110 driver. For the LB200 bulb the LB100 driver can be used, and likewise for the LB230 bulb use the LB130 driver.
+This app lets you control TP-Link Smart Plugs HS100 (plug with no energy monitoring) HS110 (plug with energy monitoring) and Smart Bulbs LB100, LB110, LB120 and LB130 from within flows and the (mobile) app. The HS200 Smart Switch is as of yet untested but should work as well (please let me know ;-) 
+
+Support for several other devices such as the HS115 mini plug and LB200 and LB230 bulbs can be added with little effort, let me know if you have one of these devices.
 
 While it is probably a good idea to used fixed IP addresses for the TP Link devices, the app now also works when the IP addresses are dynamic. This option can be enabled in the settings.
 
@@ -30,7 +32,7 @@ Supported flow actions:
 * Switch LED on / off ('nightmode', HS100/HS110)
 * reset power meter / undo reset power meter (HS110/HS200)
 * Transition on / off ('wake-up light', LB100/LB110/LB120/LB130)
-* Select mode (LB130) 
+* Select mode ('circadian' or 'normal', LB120/LB130) 
 
 Mobile capabilities:
 
@@ -39,7 +41,6 @@ Mobile capabilities:
 * Dim (LB100/LB110/LB120/LB130
 * Set light temperature (LB120/LB130)
 * Set hue (LB130)
-* Select 'circadian' mode, in which the light changes during the day (LB130)
 
 Energy monitoring has currently not been implemented for the bulbs (LB110 and up) as I am not sure anyone would use it. The selection of pre-sets for the LB130 is currently not supported in the API.
 
