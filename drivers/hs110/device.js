@@ -5,13 +5,21 @@ const {
 } = require('tplink-smarthome-api');
 const client = new Client();
 
-//var oldonoffState = "";
 var oldpowerState = "";
 var oldtotalState = 0;
-var totalOffset = 0
+var totalOffset = 0;
 var oldvoltageState = 0;
 var oldcurrentState = 0;
-var reachable = 0;
+var unreachableCount = 0;
+var discoverCount = 0;
+
+// get driver name based on dirname (hs100, hs110, etc.)
+function getDriverName() {
+    var parts = __dirname.replace(/\\/g, '/').split('/');
+    return parts[parts.length - 1].split('.')[0];
+}
+
+var TPlinkModel = getDriverName().toUpperCase();
 
 class TPlinkPlugDevice extends Homey.Device {
 
@@ -19,33 +27,26 @@ class TPlinkPlugDevice extends Homey.Device {
         var interval = 10;
 
         this.log('device init');
-        //        console.dir(this.getSettings()); // for debugging
-        //        console.dir(this.getData()); // for debugging
+        // console.dir(this.getSettings()); // for debugging
+        // console.dir(this.getData()); // for debugging
         let settings = this.getSettings();
         let id = this.getData().id;
         this.log('id: ', id);
         this.log('name: ', this.getName());
         this.log('class: ', this.getClass());
         this.log('settings IP address: ', settings["settingIPAddress"])
+
+        // in case the device was not paired with a version including the dynamicIp setting, set it to false
+        if ((settings["dynamicIp"] != undefined) && (typeof (settings["dynamicIp"]) === 'boolean')) {
+            this.log("dynamicIp is defined: " + settings["dynamicIp"])
+        } else {
+            this.setSettings({
+                dynamicIp: false
+            }).catch(this.error);
+        }
+
         this.log('settings totalOffset: ', settings["totalOffset"])
         totalOffset = settings["totalOffset"];
-
-        if (settings["deviceId"] === 'undefined') {
-            try {
-                this.plug = client.getPlug({
-                    host: settings["settingIPAddress"]
-                });
-                this.plug.getSysInfo().then((info) => {
-                    this.setSettings({
-                        deviceId: info.deviceId
-                    }).catch(this.error);
-                }).catch(this.error)
-            } catch (err) {
-                this.log("Caught error in setting deviceId: " + err.message);
-            }
-        } else {
-            this.log("DeviceId: " + settings["deviceId"])
-        }
 
         this.pollDevice(interval);
 
@@ -102,7 +103,9 @@ class TPlinkPlugDevice extends Homey.Device {
     onAdded() {
         let id = this.getData().id;
         this.log("Device added: " + id);
+        let settings = this.getSettings();
         var interval = 10;
+
         this.pollDevice(interval);
     }
 
@@ -161,6 +164,11 @@ class TPlinkPlugDevice extends Homey.Device {
                     case 'settingIPAddress':
                         this.log('IP address changed to ' + newSettingsObj.settingIPAddress);
                         settings.settingIPAddress = newSettingsObj.settingIPAddress;
+                        break;
+
+                    case 'dynamicIp':
+                        this.log('DynamicIp option changed to ' + newSettingsObj.dynamicIp);
+                        settings.dynamicIp = newSettingsObj.dynamicIp;
                         break;
 
                     default:
@@ -274,74 +282,87 @@ class TPlinkPlugDevice extends Homey.Device {
         let settings = this.getSettings();
         let device = settings.settingIPAddress;
         this.log("getStatus device: " + device);
-        this.plug = client.getPlug({
-            host: device
-        });
-        await this.plug.getInfo().then((data) => {
-                //this.log("Data: ", JSON.stringify(data));
 
-                //oldonoffState = this.getCapabilityValue('onoff');
-                oldpowerState = this.getCapabilityValue('measure_power');
-                oldtotalState = this.getCapabilityValue('meter_power');
-                oldvoltageState = this.getCapabilityValue('measure_voltage');
-                oldcurrentState = this.getCapabilityValue('measure_current');
-
-                var total = data.emeter.realtime.total;
-                var corrected_total = total - totalOffset;
-
-
-                if (data.sysInfo.relay_state === 1) {
-                    this.log('Relay state on ');
-                    this.setCapabilityValue('onoff', true)
-                        .catch(this.error);
-                } else {
-                    this.log('Relay state off ');
-                    this.setCapabilityValue('onoff', false)
-                        .catch(this.error);
-                }
-
-                // update realtime data only in case it changed
-
-                if (oldtotalState != corrected_total) {
-                    this.log("Total - Offset: " + corrected_total);
-                    this.setCapabilityValue('meter_power', corrected_total)
-                        .catch(this.error);
-                }
-                /*
-                if (oldonoffState != data.sysInfo.relay_state) {
-                    this.log("Capability power on: " + data.sysInfo.relay_state);
-                    this.log("typeof data.sysInfo.relay_state: " + typeof(data.sysInfo.relay_state));
-                    this.setCapabilityValue('onoff', data.sysInfo.relay_state);
-                } 
-                */
-                if (oldpowerState != data.emeter.realtime.power) {
-                    this.log('Power changed: ' + data.emeter.realtime.power);
-                    this.setCapabilityValue('measure_power', data.emeter.realtime.power)
-                        .catch(this.error);
-                }
-                if (oldvoltageState != data.emeter.realtime.voltage) {
-                    this.log('Voltage changed: ' + data.emeter.realtime.voltage);
-                    this.setCapabilityValue('measure_voltage', data.emeter.realtime.voltage)
-                        .catch(this.error);
-                }
-                if (oldcurrentState != data.emeter.realtime.current) {
-                    this.log('Current changed: ' + data.emeter.realtime.current);
-                    this.setCapabilityValue('measure_current', data.emeter.realtime.current)
-                        .catch(this.error);
-                }
-            })
-            .catch((err) => {
-                var errRegEx = new RegExp("EHOSTUNREACH", 'g')
-                if (err.message.match(errRegEx)) {
-                    this.log("Device unreachable");
-                    reachable += 1;
-                    if (reachable >= 3) {
-                        this.log("Unreachable, starting autodiscovery");
-                        this.discover();
-                    }
-                }
-                this.log("Caught error in getStatus / getSysInfo function: " + err.message);
+        try {
+            this.plug = await client.getPlug({
+                host: device
             });
+
+            await this.plug.getInfo().then((data) => {
+                    //this.log("DeviceID: " + settings["deviceId"]);
+                    //this.log("GetStatus data.sysInfo.deviceId: " + data.sysInfo.deviceId);
+
+                    if (settings["deviceId"] === undefined) {
+                        this.setSettings({
+                            deviceId: data.sysInfo.deviceId
+                        }).catch(this.error);
+                        this.log("DeviceId added: " + settings["deviceId"])
+                    }
+
+                    if (TPlinkModel != "HS100") {
+                        oldpowerState = this.getCapabilityValue('measure_power');
+                        oldtotalState = this.getCapabilityValue('meter_power');
+                        oldvoltageState = this.getCapabilityValue('measure_voltage');
+                        oldcurrentState = this.getCapabilityValue('measure_current');
+
+                        var total = data.emeter.realtime.total;
+                        var corrected_total = total - totalOffset;
+                    }
+
+                    if (data.sysInfo.relay_state === 1) {
+                        this.log('Relay state on ');
+                        this.setCapabilityValue('onoff', true)
+                            .catch(this.error);
+                    } else {
+                        this.log('Relay state off ');
+                        this.setCapabilityValue('onoff', false)
+                            .catch(this.error);
+                    }
+
+                    // update realtime data only in case it changed
+                    if (TPlinkModel != "HS100") {
+                        if (oldtotalState != corrected_total) {
+                            this.log("Total - Offset: " + corrected_total);
+                            this.setCapabilityValue('meter_power', corrected_total)
+                                .catch(this.error);
+                        }
+
+                        if (oldpowerState != data.emeter.realtime.power) {
+                            this.log('Power changed: ' + data.emeter.realtime.power);
+                            this.setCapabilityValue('measure_power', data.emeter.realtime.power)
+                                .catch(this.error);
+                        }
+                        if (oldvoltageState != data.emeter.realtime.voltage) {
+                            this.log('Voltage changed: ' + data.emeter.realtime.voltage);
+                            this.setCapabilityValue('measure_voltage', data.emeter.realtime.voltage)
+                                .catch(this.error);
+                        }
+                        if (oldcurrentState != data.emeter.realtime.current) {
+                            this.log('Current changed: ' + data.emeter.realtime.current);
+                            this.setCapabilityValue('measure_current', data.emeter.realtime.current)
+                                .catch(this.error);
+                        }
+                    }
+                })
+                .catch((err) => {
+                    var errRegEx = new RegExp("EHOSTUNREACH", 'g')
+                    if (err.message.match(errRegEx)) {
+                        unreachableCount += 1;
+                        this.log("Device unreachable. Unreachable count: " + unreachableCount + " Discover count: " + discoverCount + " DynamicIP option: " + settings["dynamicIp"]);
+
+                        if ((unreachableCount >= 3) && settings["dynamicIp"] && (discoverCount < 10)) {
+                            this.setUnavailable("Device offline");
+                            discoverCount += 1;
+                            this.log("Unreachable, starting autodiscovery");
+                            this.discover();
+                        }
+                    }
+                    this.log("Caught error in getStatus / getSysInfo function: " + err.message);
+                });
+        } catch (err) {
+            this.log("Caught error in getStatus function: " + err.message);
+        }
+
     }
 
     pollDevice(interval) {
@@ -358,12 +379,14 @@ class TPlinkPlugDevice extends Homey.Device {
     }
 
     discover() {
+        // TODO: rewrite with API's discovery options (timeout, excluded MAC addresses, interval)
         let settings = this.getSettings();
         // discover new plugs
         client.startDiscovery();
         client.on('plug-new', (plug) => {
-            //logEvent('plug-new', plug);
-            if (plug.deviceId == settings["deviceId"]) {
+            this.log("Settings deviceId: " + settings["deviceId"]);
+            this.log("Host: " + plug.host + " deviceId: " + plug._sysInfo.deviceId);
+            if (plug._sysInfo.deviceId == settings["deviceId"]) {
                 this.setSettings({
                     settingIPAddress: plug.host
                 }).catch(this.error);
@@ -371,12 +394,16 @@ class TPlinkPlugDevice extends Homey.Device {
                     client.stopDiscovery()
                 }, 1000);
                 this.log("Discovered online plug: " + plug.deviceId);
-                //callback(null, data);
+                this.log("Resetting unreachable count to 0");
+                unreachableCount = 0;
+                discoverCount = 0;
+                this.setAvailable();
             }
         })
         client.on('plug-online', (plug) => {
-            //logEvent('plug-online', plug);
-            if (plug.deviceId == settings["deviceId"]) {
+            this.log("Settings deviceId: " + settings["deviceId"]);
+            this.log("Host: " + plug.host + " deviceId: " + plug._sysInfo.deviceId);
+            if (plug._sysInfo.deviceId == settings["deviceId"]) {
                 this.setSettings({
                     settingIPAddress: plug.host
                 }).catch(this.error);
@@ -384,7 +411,10 @@ class TPlinkPlugDevice extends Homey.Device {
                     client.stopDiscovery()
                 }, 1000);
                 this.log("Discovered online plug: " + plug.deviceId);
-                //callback(null, data);
+                this.log("Resetting unreachable count to 0");
+                unreachableCount = 0;
+                discoverCount = 0;
+                this.setAvailable();
             }
         })
     }

@@ -4,12 +4,12 @@ const {
     Client
 } = require('tplink-smarthome-api');
 const client = new Client();
-var oldonoffState = "";
 var oldColorTemp = "";
 var oldHue = "";
 var oldSaturation = "";
 var oldBrightness = "";
-var reachable = 0;
+var unreachableCount = 0;
+var discoverCount = 0;
 
 // mode: enum: color, temperature
 const mode = {
@@ -36,13 +36,6 @@ if (TPlinkModel == "LB120") {
 }
 
 var options = {};
-/*
-var oldpowerState = {};
-var oldtotalState = 0;
-var totalOffset = 0
-var oldvoltageState = 0;
-var oldcurrentState = 0;
-*/
 
 class TPlinkBulbDevice extends Homey.Device {
 
@@ -58,29 +51,21 @@ class TPlinkBulbDevice extends Homey.Device {
         this.log('name: ', this.getName());
         this.log('class: ', this.getClass());
         this.log('settings IP address: ', settings["settingIPAddress"])
-        this.log('settings totalOffset: ', settings["totalOffset"])
+        //this.log('settings totalOffset: ', settings["totalOffset"])
         //totalOffset = settings["totalOffset"];
 
-        if (settings["deviceId"] === 'undefined') {
-            try {
-                this.bulb = client.getBulb({
-                    host: settings["settingIPAddress"]
-                });
-                this.bulb.getSysInfo().then((info) => {
-                    this.log("Fetched bulb deviceId: " + info.deviceId);
-                    this.setSettings({
-                        deviceId: info.deviceId
-                    }).catch(this.error);
-                }).catch(this.error)
-            } catch (err) {
-                this.log("Caught error in setting deviceId: " + err.message);
-            }
+        // in case the device was not paired with a version including the dynamicIp setting, set it to false
+        if ((settings["dynamicIp"] != undefined) && (typeof (settings["dynamicIp"]) === 'boolean')) {
+            this.log("dynamicIp is defined: " + settings["dynamicIp"])
         } else {
-            this.log("DeviceId: " + settings["deviceId"])
+            this.setSettings({
+                dynamicIp: false
+            }).catch(this.error);
         }
 
         this.pollDevice(interval);
-        //"measure_power", "meter_power""
+
+        // Capabilities: "measure_power", "meter_power""
         //"onoff", "dim", "light_hue", "light_saturation","light_mode","light_temperature"
         this.registerCapabilityListener('onoff', this.onCapabilityOnoff.bind(this));
         this.registerCapabilityListener('dim', this.onCapabilityDim.bind(this));
@@ -203,7 +188,8 @@ class TPlinkBulbDevice extends Homey.Device {
         }
         this.log('Setting brightness ' + device + ' to ' + dimLevel);
         this.dim(device, dimLevel);
-        //this.setCapabilityValue('dim',value)
+        this.setCapabilityValue('dim', value)
+            .catch(this.error);
         // Then, emit a callback ( err, result )
         callback(null, value);
     }
@@ -224,6 +210,8 @@ class TPlinkBulbDevice extends Homey.Device {
         }
         this.log('Setting hue level of ' + device + ' to ' + hueLevel);
         this.set_hue(device, hueLevel);
+        this.setCapabilityValue('light_hue', value)
+            .catch(this.error);
         // Then, emit a callback ( err, result )
         callback(null, value);
     }
@@ -243,6 +231,8 @@ class TPlinkBulbDevice extends Homey.Device {
         }
         this.log('Setting light saturation of ' + device + ' to ' + saturationLevel);
         this.set_saturation(device, saturationLevel);
+        this.setCapabilityValue('light_saturation', value)
+            .catch(this.error);
         // Then, emit a callback ( err, result )
         callback(null, value);
     }
@@ -265,6 +255,8 @@ class TPlinkBulbDevice extends Homey.Device {
             }
             this.log('Setting light temperature of ' + device + ' to ' + tempLevel);
             this.color_temp(device, tempLevel);
+            this.setCapabilityValue('light_temperature', value)
+                .catch(this.error);
             // Then, emit a callback ( err, result )
             callback(null, value);
         }
@@ -276,7 +268,7 @@ class TPlinkBulbDevice extends Homey.Device {
         let settings = this.getSettings();
         let device = settings["settingIPAddress"];
         this.log('Setting light mode of ' + device + ' to ' + value);
-        //   Someone touched one of the 'mode' icons: turn on device' 
+        //   Someone touched one of the 'mode' icons: turn on device
         this.powerOn(device);
         this.setCapabilityValue('light_mode', value)
             .catch(this.error);
@@ -492,36 +484,33 @@ class TPlinkBulbDevice extends Homey.Device {
         let deviceId = settings.deviceId;
         this.log("getStatus device: " + device);
         this.log("DeviceId device: " + deviceId);
+
         try {
-            this.bulb = client.getBulb({
+            this.bulb = await client.getBulb({
                 host: device
             });
 
-            oldonoffState = this.getCapabilityValue('onoff');
+            if (settings["deviceId"] === undefined) {
+                try {
+                    this.bulb.getSysInfo().then((info) => {
+                        this.log("Fetched bulb deviceId: " + info.deviceId);
+                        this.setSettings({
+                            deviceId: info.deviceId
+                        }).catch(this.error);
+                    }).catch(this.error)
+                } catch (err) {
+                    this.log("Caught error in setting deviceId: " + err.message);
+                }
+            } else {
+                this.log("DeviceId: " + settings["deviceId"])
+            }
+
             oldColorTemp = this.getCapabilityValue('light_temperature');
             oldHue = this.getCapabilityValue('light_hue');
             oldSaturation = this.getCapabilityValue('light_saturation');
             oldBrightness = this.getCapabilityValue('dim');
             oldMode = mode[this.getCapabilityValue('light_mode')];
-            /*
-                                oldpowerState = this.getCapabilityValue('measure_power');
-                                oldtotalState = this.getCapabilityValue('meter_power');
-                                oldvoltageState = this.getCapabilityValue('measure_voltage');
-                                oldcurrentState = this.getCapabilityValue('measure_current');
-                                */
 
-            /*
-            var bla = client.getDevice({
-                host: device
-            }).then((device) => {
-                device.getSysInfo().then(this.log);
-            }); */
-            /*
-                        await this.bulb.emeter.getRealtime().then((emeter) => {
-                            this.log("Emeter getRealtime output: ");
-                            this.log(emeter);
-                        })
-                   */
             await this.bulb.lighting.getLightState().then((bulbState) => {
                     this.log('getLightState: ' + JSON.stringify(bulbState));
                     if (bulbState.on_off === 1) {
@@ -529,28 +518,39 @@ class TPlinkBulbDevice extends Homey.Device {
                         this.setCapabilityValue('onoff', true)
                             .catch(this.error);
 
-                        if (bulbState.color_temp == 0) {
-                            var new_light_temperature = 0
-                        } else {
-                            var new_light_temperature = this.round(1 - ((bulbState.color_temp - kelvinLow) / (kelvinHigh - kelvinLow)), 2);
+                        // bulbState mode: circadian or normal. Only for LB130 and LB120
+                        if ((TPlinkModel == "LB130") || (TPlinkModel == "LB120")) {
+                            if (bulbState.mode == "normal") {
+                                this.log('Bulb state: normal');
+                            } else
+                            if (bulbState.mode == "circadian") {
+                                this.log('Bulb state: circadian');
+                            }
+
+                            if (bulbState.color_temp == 0) {
+                                var new_light_temperature = 0
+                            } else {
+                                var new_light_temperature = this.round(1 - ((bulbState.color_temp - kelvinLow) / (kelvinHigh - kelvinLow)), 2);
+                            }
+
+                            if (oldColorTemp != new_light_temperature) {
+                                this.log('ColorTemp changed: ' + new_light_temperature);
+                                this.setCapabilityValue('light_temperature', new_light_temperature)
+                                    .catch(this.error);
+                            }
+                            if (oldSaturation != bulbState.saturation / 100) {
+                                this.log('Saturation changed: ' + bulbState.saturation);
+                                this.setCapabilityValue('light_saturation', bulbState.saturation / 100)
+                                    .catch(this.error);
+                            }
                         }
 
-                        if (oldColorTemp != new_light_temperature) {
-                            this.log('ColorTemp changed: ' + new_light_temperature);
-                            this.setCapabilityValue('light_temperature', new_light_temperature)
-                                .catch(this.error);
-                        }
-
-                        if (oldHue != this.round((bulbState.hue / 360), 2)) {
-                            this.log('Hue changed: ' + this.round((bulbState.hue / 360), 2));
-                            this.setCapabilityValue('light_hue', this.round((bulbState.hue / 360), 2))
-                                .catch(this.error);
-                        }
-
-                        if (oldSaturation != bulbState.saturation / 100) {
-                            this.log('Saturation changed: ' + bulbState.saturation);
-                            this.setCapabilityValue('light_saturation', bulbState.saturation / 100)
-                                .catch(this.error);
+                        if (TPlinkModel == "LB130") {
+                            if (oldHue != this.round((bulbState.hue / 360), 2)) {
+                                this.log('Hue changed: ' + this.round((bulbState.hue / 360), 2));
+                                this.setCapabilityValue('light_hue', this.round((bulbState.hue / 360), 2))
+                                    .catch(this.error);
+                            }
                         }
 
                         if (oldBrightness != bulbState.brightness / 100) {
@@ -562,27 +562,7 @@ class TPlinkBulbDevice extends Homey.Device {
                         if (oldMode != this.getCapabilityValue('light_mode')) {
                             this.log('Light_mode changed: ' + this.getCapabilityValue('light_mode'));
                         }
-                        // bulbState mode: circadian or normal
-                        if (bulbState.mode == "normal") {
-                            this.log('Bulb state: normal');
-                        } else {
-                            this.log('Bulb state: circadian');
-                        }
-                        /*
-                        // updated states
-                        //device.state.light_temperature = JSON.stringify(bulbState.dft_on_state.color_temp, null, 2);
-                        this.setCapabilityValue('light_temperature', JSON.stringify(bulbState.color_temp, null, 2));
-                        this.log('Light temperature : ' + device.state.light_temperature);
-                        // (huePercent + 0.01)* 360
-                        this.setCapabilityValue('light_hue', round((bulbState.hue / 360), 2));
-                        this.log('Hue : ' + device.state.light_hue);
-                        this.setCapabilityValue('light_saturation', bulbState.saturation / 100);
-                        this.log('Saturation : ' + device.state.light_saturation);
-                        this.setCapabilityValue('dim', bulbState.brightness / 100);
-                        this.log('Brightness : ' + device.state.dim);
-                        this.setCapabilityValue('mode', bulbState.mode);
-                        this.log('Mode : ' + bulbState.mode);
-                        */
+
                     } else if (bulbState.on_off === 0) {
                         this.log('Bulb off ');
                         this.setCapabilityValue('onoff', false)
@@ -594,28 +574,18 @@ class TPlinkBulbDevice extends Homey.Device {
                 .catch((err) => {
                     var errRegEx = new RegExp("EHOSTUNREACH", 'g')
                     if (err.message.match(errRegEx)) {
-                        this.log("Device unreachable");
-                        reachable += 1;
-                        if (reachable >= 3) {
+                        unreachableCount += 1;
+                        this.log("Device unreachable. Unreachable count: " + unreachableCount + " Discover count: " + discoverCount + " DynamicIP option: " + settings["dynamicIp"]);
+
+                        if ((unreachableCount >= 3) && settings["dynamicIp"] && (discoverCount < 10)) {
+                            this.setUnavailable("Device offline");
+                            discoverCount += 1;
                             this.log("Unreachable, starting autodiscovery");
                             this.discover();
                         }
                     }
                     this.log("Caught error in getStatus / getSysInfo function: " + err.message);
                 });
-
-
-            /*             device.state.measure_power = parseFloat(JSON.stringify(data.emeter.get_realtime.power, null, 2));
-                        var total = parseFloat(JSON.stringify(data.emeter.get_realtime.total, null, 2));
-                        this.log('TP Link smartbulb app - total: ' + total);
-                        // for some reason the Kasa app does reset something, but not the total
-                        this.log('TP Link smartbulb app - totalOffset: ' + totalOffset);
-                        device.state.meter_power = total - totalOffset;
-                        this.log('TP Link smartbulb app - total - Offset: ' + device.state.meter_power);
-                    });
-
-            */
-
         } catch (err) {
             this.log("Caught error in getStatus function: " + err.message);
         }
@@ -639,6 +609,7 @@ class TPlinkBulbDevice extends Homey.Device {
     }
 
     discover() {
+        // TODO: rewrite with API's discovery options (timeout, excluded MAC addresses, interval)
         let settings = this.getSettings();
         // discover new bulbs
         client.startDiscovery();
@@ -651,6 +622,10 @@ class TPlinkBulbDevice extends Homey.Device {
                     client.stopDiscovery()
                 }, 1000);
                 this.log("Discovered online bulb: " + bulb.deviceId);
+                this.log("Resetting unreachable count to 0");
+                unreachableCount = 0;
+                discoverCount = 0;
+                this.setAvailable();
             }
         })
         client.on('bulb-online', (bulb) => {
@@ -662,6 +637,10 @@ class TPlinkBulbDevice extends Homey.Device {
                     client.stopDiscovery()
                 }, 1000);
                 this.log("Discovered online bulb: " + bulb.deviceId);
+                this.log("Resetting unreachable count to 0");
+                unreachableCount = 0;
+                discoverCount = 0;
+                this.setAvailable();
             }
         })
     }

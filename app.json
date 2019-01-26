@@ -9,7 +9,7 @@
                 "en": ["light", "socket", "switch", "plug", "bulb", "energy monitoring", "HS100", "HS105", "HS110", "HS200", "LB100", "LB110", "LB120", "LB130", "LB200", "LB230"],
                 "nl": ["lamp", "licht", "schakelaar", "energie monitoring", "HS100", "HS105", "HS110", "HS200", "LB100", "LB110", "LB120", "LB130", "LB200", "LB230"]
         },
-        "version": "0.1.1",
+        "version": "0.1.2",
         "compatibility": ">=1.5.0",
         "author": {
                 "name": "Anne Baretta",
@@ -91,21 +91,44 @@
                                 }
                         ],
                         "settings": [{
-                                "type": "group",
-                                "label": {
-                                        "en": "General settings",
-                                        "nl": "Algemene instellingen"
-                                },
-                                "children": [{
-                                        "id": "settingIPAddress",
-                                        "type": "text",
+                                        "type": "group",
                                         "label": {
-                                                "en": "IP address",
-                                                "nl": "IP adres"
+                                                "en": "General settings",
+                                                "nl": "Algemene instellingen"
                                         },
-                                        "value": "0.0.0.0"
-                                }]
-                        }]
+                                        "children": [{
+                                                "id": "settingIPAddress",
+                                                "type": "text",
+                                                "label": {
+                                                        "en": "IP address",
+                                                        "nl": "IP adres"
+                                                },
+                                                "value": "0.0.0.0"
+                                        }]
+                                },
+                                {
+                                        "type": "group",
+                                        "collapsed": "true",
+                                        "label": {
+                                                "en": "Optional connection setting",
+                                                "nl": "Optionele verbindingsinstelling"
+                                        },
+                                        "children": [{
+                                                "id": "dynamicIp",
+                                                "type": "checkbox",
+                                                "value": false,
+                                                "label": {
+                                                        "en": "Enable if your TP-Link device uses a dynamically assigned IP address (optional):",
+                                                        "nl": "Selecteer als het TP-Link apparaat een dynamisch toegewezen IP adres gebruikt (optioneel):"
+                                                },
+                                                "hint": {
+                                                        "en": "Enable this option if your TP-Link uses a dynamic IP address. The app will then attempt to re-discover the device when it becomes unreachable.",
+                                                        "nl": "Zet deze optie aan als de TP-Link een dynamisch toegewezen IP adres gebruikt. De app zal dan pogen het apparaat opnieuw te vinden zodra het onbereikbaar wordt."
+                                                }
+                                        }]
+                                }
+
+                        ]
                 },
                 {
                         "id": "hs110",
@@ -152,25 +175,49 @@
                                 }
                         ],
                         "settings": [{
-                                "type": "group",
-                                "label": {
-                                        "en": "General settings",
-                                        "nl": "Algemene instellingen"
-                                },
-                                "children": [{
-                                        "id": "settingIPAddress",
-                                        "type": "text",
+                                        "type": "group",
                                         "label": {
-                                                "en": "IP address",
-                                                "nl": "IP adres"
+                                                "en": "General settings",
+                                                "nl": "Algemene instellingen"
                                         },
-                                        "value": "0.0.0.0",
-                                        "hint": {
-                                                "en": "Only change the IP address here if the device's IP address has changed! This does not change the IP adres on the device.",
-                                                "nl": "Pas het IP adres hier alleen aan als het IP adres van de TP-Link veranderd is! De instelling veranderd het IP van de TP-Link niet."
-                                        }
-                                }]
-                        }]
+                                        "children": [{
+                                                "id": "settingIPAddress",
+                                                "type": "text",
+                                                "label": {
+                                                        "en": "IP address",
+                                                        "nl": "IP adres"
+                                                },
+                                                "value": "0.0.0.0",
+                                                "hint": {
+                                                        "en": "Only change the IP address here if the device's IP address has changed! This does not change the IP adres on the device.",
+                                                        "nl": "Pas het IP adres hier alleen aan als het IP adres van de TP-Link veranderd is! De instelling veranderd het IP van de TP-Link niet."
+                                                }
+                                        }]
+                                },
+                                {
+                                        "type": "group",
+                                        "collapsed": "true",
+                                        "label": {
+                                                "en": "Optional connection setting",
+                                                "nl": "Optionele verbindingsinstelling"
+                                        },
+                                        "children": [{
+                                                "id": "dynamicIp",
+                                                "type": "checkbox",
+                                                "value": false,
+                                                "label": {
+                                                        "en": "Enable if your TP-Link device uses a dynamically assigned IP address (optional):",
+                                                        "nl": "Selecteer als het TP-Link apparaat een dynamisch toegewezen IP adres gebruikt (optioneel):"
+                                                },
+                                                "hint": {
+                                                        "en": "Enable this option if your TP-Link uses a dynamic IP address. The app will then attempt to re-discover the device when it becomes unreachable.",
+                                                        "nl": "Zet deze optie aan als de TP-Link een dynamisch toegewezen IP adres gebruikt. De app zal dan pogen het apparaat opnieuw te vinden zodra het onbereikbaar wordt."
+                                                }
+                                        }]
+                                }
+
+
+                        ]
                 },
                 {
                         "id": "hs200",
@@ -217,21 +264,44 @@
                                 }
                         ],
                         "settings": [{
-                                "type": "group",
-                                "label": {
-                                        "en": "General settings",
-                                        "nl": "Algemene instellingen"
-                                },
-                                "children": [{
-                                        "id": "settingIPAddress",
-                                        "type": "text",
+                                        "type": "group",
                                         "label": {
-                                                "en": "IP address",
-                                                "nl": "IP adres"
+                                                "en": "General settings",
+                                                "nl": "Algemene instellingen"
                                         },
-                                        "value": "0.0.0.0"
-                                }]
-                        }]
+                                        "children": [{
+                                                "id": "settingIPAddress",
+                                                "type": "text",
+                                                "label": {
+                                                        "en": "IP address",
+                                                        "nl": "IP adres"
+                                                },
+                                                "value": "0.0.0.0"
+                                        }]
+                                },
+                                {
+                                        "type": "group",
+                                        "collapsed": "true",
+                                        "label": {
+                                                "en": "Optional connection setting",
+                                                "nl": "Optionele verbindingsinstelling"
+                                        },
+                                        "children": [{
+                                                "id": "dynamicIp",
+                                                "type": "checkbox",
+                                                "value": false,
+                                                "label": {
+                                                        "en": "Enable if your TP-Link device uses a dynamically assigned IP address (optional):",
+                                                        "nl": "Selecteer als het TP-Link apparaat een dynamisch toegewezen IP adres gebruikt (optioneel):"
+                                                },
+                                                "hint": {
+                                                        "en": "Enable this option if your TP-Link uses a dynamic IP address. The app will then attempt to re-discover the device when it becomes unreachable.",
+                                                        "nl": "Zet deze optie aan als de TP-Link een dynamisch toegewezen IP adres gebruikt. De app zal dan pogen het apparaat opnieuw te vinden zodra het onbereikbaar wordt."
+                                                }
+                                        }]
+                                }
+
+                        ]
                 },
                 {
                         "id": "lb100",
@@ -244,7 +314,7 @@
                                 "small": "drivers/lb100/assets/images/small.jpg"
                         },
                         "class": "light",
-                        "capabilities": ["onoff", "measure_power", "meter_power", "dim", "light_mode"],
+                        "capabilities": ["onoff", "dim"],
                         "pair": [{
                                         "id": "start"
                                 },
@@ -261,21 +331,44 @@
                                 }
                         ],
                         "settings": [{
-                                "type": "group",
-                                "label": {
-                                        "en": "General settings",
-                                        "nl": "Algemene instellingen"
-                                },
-                                "children": [{
-                                        "id": "settingIPAddress",
-                                        "type": "text",
+                                        "type": "group",
                                         "label": {
-                                                "en": "IP address",
-                                                "nl": "IP adres"
+                                                "en": "General settings",
+                                                "nl": "Algemene instellingen"
                                         },
-                                        "value": "0.0.0.0"
-                                }]
-                        }]
+                                        "children": [{
+                                                "id": "settingIPAddress",
+                                                "type": "text",
+                                                "label": {
+                                                        "en": "IP address",
+                                                        "nl": "IP adres"
+                                                },
+                                                "value": "0.0.0.0"
+                                        }]
+                                },
+                                {
+                                        "type": "group",
+                                        "collapsed": "true",
+                                        "label": {
+                                                "en": "Optional connection setting",
+                                                "nl": "Optionele verbindingsinstelling"
+                                        },
+                                        "children": [{
+                                                "id": "dynamicIp",
+                                                "type": "checkbox",
+                                                "value": false,
+                                                "label": {
+                                                        "en": "Enable if your TP-Link device uses a dynamically assigned IP address (optional):",
+                                                        "nl": "Selecteer als het TP-Link apparaat een dynamisch toegewezen IP adres gebruikt (optioneel):"
+                                                },
+                                                "hint": {
+                                                        "en": "Enable this option if your TP-Link uses a dynamic IP address. The app will then attempt to re-discover the device when it becomes unreachable.",
+                                                        "nl": "Zet deze optie aan als de TP-Link een dynamisch toegewezen IP adres gebruikt. De app zal dan pogen het apparaat opnieuw te vinden zodra het onbereikbaar wordt."
+                                                }
+                                        }]
+                                }
+
+                        ]
                 },
                 {
                         "id": "lb110",
@@ -288,7 +381,7 @@
                                 "small": "drivers/lb110/assets/images/small.jpg"
                         },
                         "class": "light",
-                        "capabilities": ["onoff", "dim", "light_mode"],
+                        "capabilities": ["onoff", "dim"],
                         "pair": [{
                                         "id": "start"
                                 },
@@ -305,21 +398,44 @@
                                 }
                         ],
                         "settings": [{
-                                "type": "group",
-                                "label": {
-                                        "en": "General settings",
-                                        "nl": "Algemene instellingen"
-                                },
-                                "children": [{
-                                        "id": "settingIPAddress",
-                                        "type": "text",
+                                        "type": "group",
                                         "label": {
-                                                "en": "IP address",
-                                                "nl": "IP adres"
+                                                "en": "General settings",
+                                                "nl": "Algemene instellingen"
                                         },
-                                        "value": "0.0.0.0"
-                                }]
-                        }]
+                                        "children": [{
+                                                "id": "settingIPAddress",
+                                                "type": "text",
+                                                "label": {
+                                                        "en": "IP address",
+                                                        "nl": "IP adres"
+                                                },
+                                                "value": "0.0.0.0"
+                                        }]
+                                },
+                                {
+                                        "type": "group",
+                                        "collapsed": "true",
+                                        "label": {
+                                                "en": "Optional connection setting",
+                                                "nl": "Optionele verbindingsinstelling"
+                                        },
+                                        "children": [{
+                                                "id": "dynamicIp",
+                                                "type": "checkbox",
+                                                "value": false,
+                                                "label": {
+                                                        "en": "Enable if your TP-Link device uses a dynamically assigned IP address (optional):",
+                                                        "nl": "Selecteer als het TP-Link apparaat een dynamisch toegewezen IP adres gebruikt (optioneel):"
+                                                },
+                                                "hint": {
+                                                        "en": "Enable this option if your TP-Link uses a dynamic IP address. The app will then attempt to re-discover the device when it becomes unreachable.",
+                                                        "nl": "Zet deze optie aan als de TP-Link een dynamisch toegewezen IP adres gebruikt. De app zal dan pogen het apparaat opnieuw te vinden zodra het onbereikbaar wordt."
+                                                }
+                                        }]
+                                }
+
+                        ]
                 },
                 {
                         "id": "lb120",
@@ -349,21 +465,46 @@
                                 }
                         ],
                         "settings": [{
-                                "type": "group",
-                                "label": {
-                                        "en": "General settings",
-                                        "nl": "Algemene instellingen"
-                                },
-                                "children": [{
-                                        "id": "settingIPAddress",
-                                        "type": "text",
+                                        "type": "group",
                                         "label": {
-                                                "en": "IP address",
-                                                "nl": "IP adres"
+                                                "en": "General settings",
+                                                "nl": "Algemene instellingen"
                                         },
-                                        "value": "0.0.0.0"
-                                }]
-                        }]
+                                        "children": [{
+                                                "id": "settingIPAddress",
+                                                "type": "text",
+                                                "label": {
+                                                        "en": "IP address",
+                                                        "nl": "IP adres"
+                                                },
+                                                "value": "0.0.0.0"
+                                        }]
+                                }
+
+                                ,
+                                {
+                                        "type": "group",
+                                        "collapsed": "true",
+                                        "label": {
+                                                "en": "Optional connection setting",
+                                                "nl": "Optionele verbindingsinstelling"
+                                        },
+                                        "children": [{
+                                                "id": "dynamicIp",
+                                                "type": "checkbox",
+                                                "value": false,
+                                                "label": {
+                                                        "en": "Enable if your TP-Link device uses a dynamically assigned IP address (optional):",
+                                                        "nl": "Selecteer als het TP-Link apparaat een dynamisch toegewezen IP adres gebruikt (optioneel):"
+                                                },
+                                                "hint": {
+                                                        "en": "Enable this option if your TP-Link uses a dynamic IP address. The app will then attempt to re-discover the device when it becomes unreachable.",
+                                                        "nl": "Zet deze optie aan als de TP-Link een dynamisch toegewezen IP adres gebruikt. De app zal dan pogen het apparaat opnieuw te vinden zodra het onbereikbaar wordt."
+                                                }
+                                        }]
+                                }
+
+                        ]
                 },
                 {
                         "id": "lb130",
@@ -393,21 +534,44 @@
                                 }
                         ],
                         "settings": [{
-                                "type": "group",
-                                "label": {
-                                        "en": "General settings",
-                                        "nl": "Algemene instellingen"
-                                },
-                                "children": [{
-                                        "id": "settingIPAddress",
-                                        "type": "text",
+                                        "type": "group",
                                         "label": {
-                                                "en": "IP address",
-                                                "nl": "IP adres"
+                                                "en": "General settings",
+                                                "nl": "Algemene instellingen"
                                         },
-                                        "value": "0.0.0.0"
-                                }]
-                        }]
+                                        "children": [{
+                                                "id": "settingIPAddress",
+                                                "type": "text",
+                                                "label": {
+                                                        "en": "IP address",
+                                                        "nl": "IP adres"
+                                                },
+                                                "value": "0.0.0.0"
+                                        }]
+                                },
+                                {
+                                        "type": "group",
+                                        "collapsed": "true",
+                                        "label": {
+                                                "en": "Optional connection setting",
+                                                "nl": "Optionele verbindingsinstelling"
+                                        },
+                                        "children": [{
+                                                "id": "dynamicIp",
+                                                "type": "checkbox",
+                                                "value": false,
+                                                "label": {
+                                                        "en": "Enable if your TP-Link device uses a dynamically assigned IP address (optional):",
+                                                        "nl": "Selecteer als het TP-Link apparaat een dynamisch toegewezen IP adres gebruikt (optioneel):"
+                                                },
+                                                "hint": {
+                                                        "en": "Enable this option if your TP-Link uses a dynamic IP address. The app will then attempt to re-discover the device when it becomes unreachable.",
+                                                        "nl": "Zet deze optie aan als de TP-Link een dynamisch toegewezen IP adres gebruikt. De app zal dan pogen het apparaat opnieuw te vinden zodra het onbereikbaar wordt."
+                                                }
+                                        }]
+                                }
+
+                        ]
                 }
         ],
         "flow": {

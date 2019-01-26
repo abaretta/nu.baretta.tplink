@@ -1,5 +1,12 @@
 # Changelog
 
+**Version 0.1.2**
+- Bugfixes, 'dynamic' ip feature is now an option that can be enabled in the settings.
+- The number of discovery attempts is limited to 10 to prevent a runaway discovery process.
+
+**Version 0.1.1**
+- Bugfixes 
+
 **Version 0.1.0**
 - Complete SDK2 rewrite
 - The app will now continue to work when the IP address of the plugs or bulbs changes.

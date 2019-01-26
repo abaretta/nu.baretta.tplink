@@ -35,8 +35,8 @@ class TPlinkBulbDriver extends Homey.Driver {
 
         try {
             Object.values(this.getDevices()).forEach(device => {
-                this.log(device.bulb._sysInfo.deviceId);
-                devIds[device.bulb._sysInfo.deviceId] = "";
+                this.log("deviceId: " + device.getSettings().deviceId);
+                devIds[device.getSettings().deviceId] = "";
             })
             this.log(devIds);
         } catch (err) {
@@ -57,10 +57,16 @@ class TPlinkBulbDriver extends Homey.Driver {
 
         // discover function
         socket.on('discover', (data, callback) => {
-            this.log('TP Link smartbulb app - Starting Bulb Discovery');
+            this.log('Starting Bulb Discovery');
 
             // discover new bulbs
-            client.startDiscovery();
+            // TODO: use API's discovery options (exclude MAC addresses, timeout, interval)
+            var discoveryOptions = {
+                deviceTypes: 'bulb',
+                discoveryInterval: 2500,
+                discoveryTimeout: 9000
+            }
+            client.startDiscovery(discoveryOptions);
             client.on('bulb-new', (bulb) => {
                 logEvent('bulb-new', bulb);
 
@@ -68,9 +74,9 @@ class TPlinkBulbDriver extends Homey.Driver {
                     // check if device is known
                     if (devIds.hasOwnProperty(bulb.deviceId)) {
                         this.log("Key found in devices: " + JSON.stringify(devIds));
-                        this.log("TP Link smartbulb app - device " + bulb.host + " is known, skipping. Model: " + bulb.model + " name " + bulb.name + " mac " + bulb.mac + " id " + bulb.deviceId);
+                        this.log("Device " + bulb.host + " is known, skipping. Model: " + bulb.model + " name " + bulb.name + " mac " + bulb.mac + " id " + bulb.deviceId);
                     } else {
-                        this.log("TP Link smartbulb app - bulb found: " + bulb.host + " model " + bulb.model + " name " + bulb.name + " mac " + bulb.mac + " id " + bulb.deviceId);
+                        this.log("Bulb found: " + bulb.host + " model " + bulb.model + " name " + bulb.name + " mac " + bulb.mac + " id " + bulb.deviceId);
 
                         var data = {
                             ip: bulb.host,
@@ -80,7 +86,7 @@ class TPlinkBulbDriver extends Homey.Driver {
                         setTimeout(function () {
                             client.stopDiscovery()
                         }, 1000);
-                        this.log("TP Link smartbulb app - discovered new bulb: " + data.id + " name " + data.name);
+                        this.log("Discovered new bulb: " + data.id + " name " + data.name);
                         callback(null, data);
                     }
                 }
@@ -90,9 +96,9 @@ class TPlinkBulbDriver extends Homey.Driver {
                 if (bulb.model.match(myRegEx)) {
                     if (devIds.hasOwnProperty(bulb.deviceId)) {
                         this.log("Key found in devices: " + JSON.stringify(devIds));
-                        this.log("TP Link smartbulb app - device " + bulb.host + " is known, skipping. Model: " + bulb.model + " name " + bulb.name + " mac " + bulb.mac + " id " + bulb.deviceId);
+                        this.log("Device " + bulb.host + " is known, skipping. Model: " + bulb.model + " name " + bulb.name + " mac " + bulb.mac + " id " + bulb.deviceId);
                     } else {
-                        this.log("TP Link smartbulb app - online bulb found: " + bulb.host + " model " + bulb.model + " name " + bulb.name + " mac " + bulb.mac + " id " + bulb.deviceId);
+                        this.log("Online bulb found: " + bulb.host + " model " + bulb.model + " name " + bulb.name + " mac " + bulb.mac + " id " + bulb.deviceId);
 
                         var data = {
                             ip: bulb.host,
@@ -102,7 +108,7 @@ class TPlinkBulbDriver extends Homey.Driver {
                         setTimeout(function () {
                             client.stopDiscovery()
                         }, 1000);
-                        this.log("TP Link smartbulb app - discovered online bulb: " + data.name);
+                        this.log("Discovered online bulb: " + data.name);
                         callback(null, data);
                     }
                 }
@@ -111,7 +117,7 @@ class TPlinkBulbDriver extends Homey.Driver {
 
         // this is called when the user presses save settings button in start.html
         socket.on('get_devices', (data, callback) => {
-            this.log("TP Link smartbulb app - get_devices data: " + JSON.stringify(data));
+            this.log("Get_devices data: " + JSON.stringify(data));
             devices = [{
                 data: {
                     id: id
@@ -119,12 +125,13 @@ class TPlinkBulbDriver extends Homey.Driver {
                 name: data.deviceName,
                 settings: {
                     "settingIPAddress": data.ipaddress,
+                    "dynamicIp": false,
                     "totalOffset": 0
                 } // initial settings
             }];
 
             // Set passed pair settings in variables
-            this.log("TP Link smartbulb app - got get_devices from front-end, IP =", data.ipaddress, " Name = ", data.deviceName);
+            this.log("Got get_devices from front-end, IP =", data.ipaddress, " Name = ", data.deviceName);
             socket.emit('continue', null);
 
             // this method is run when Homey.emit('list_devices') is run on the front-end
@@ -132,14 +139,14 @@ class TPlinkBulbDriver extends Homey.Driver {
 
             socket.on('list_devices', (data, callback) => {
 
-                this.log("TP Link smartbulb app - list_devices data: " + JSON.stringify(data));
+                this.log("List_devices data: " + JSON.stringify(data));
 
                 callback(null, devices);
             });
         });
 
         socket.on('disconnect', () => {
-            this.log("TP Link smartbulb app - Pairing is finished (done or aborted)");
+            this.log("Pairing is finished (done or aborted)");
         })
     }
 }

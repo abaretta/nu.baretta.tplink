@@ -2,7 +2,7 @@
 
 This app lets you control TP-Link Smart Plugs HS100 (plug with no energy monitoring) HS110 (plug with energy monitoring) and Smart Bulbs LB100, LB110, LB120 and LB130 from within flows and the (mobile) app. The HS200 Smart Switch is as of yet untested but should work as well (please let me know ;-) The same goes for the HS115 mini plug, this should work with the HS110 driver. For the LB200 bulb the LB100 driver can be used, and likewise for the LB230 bulb use the LB130 driver.
 
-While it is probably a good idea to used fixed IP addresses for the TP Link devices, the app now also works when the IP addresses are dynamic.
+While it is probably a good idea to used fixed IP addresses for the TP Link devices, the app now also works when the IP addresses are dynamic. This option can be enabled in the settings.
 
 This app is based on the following resources:
 

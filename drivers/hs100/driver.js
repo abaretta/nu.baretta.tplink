@@ -34,11 +34,11 @@ class TPlinkPlugDriver extends Homey.Driver {
         var devIds = {};
 
         try {
-            //let allDevices = this.getDevices();
-
             Object.values(this.getDevices()).forEach(device => {
-                this.log(device.plug._sysInfo.deviceId);
-                devIds[device.plug._sysInfo.deviceId] = "";
+                this.log("deviceId: " + device.getSettings().deviceId);
+                devIds[device.getSettings().deviceId] = "";
+                //this.log(device.plug._sysInfo.deviceId);
+                //devIds[device.plug._sysInfo.deviceId] = "";
             })
             this.log(devIds);
         } catch (err) {
@@ -62,7 +62,13 @@ class TPlinkPlugDriver extends Homey.Driver {
             this.log('Starting Plug Discovery');
 
             // discover new plugs
-            client.startDiscovery();
+            // TODO: use API's discovery options (exclude MAC addresses, timeout, interval)
+            var discoveryOptions = {
+                deviceTypes: 'plug',
+                discoveryInterval: 2500,
+                discoveryTimeout: 9000
+            }
+            client.startDiscovery(discoveryOptions);
             client.on('plug-new', (plug) => {
                 logEvent('plug-new', plug);
 
@@ -121,6 +127,7 @@ class TPlinkPlugDriver extends Homey.Driver {
                 name: data.deviceName,
                 settings: {
                     "settingIPAddress": data.ipaddress,
+                    "dynamicIp": false,
                     "totalOffset": 0
                 } // initial settings
             }];
