@@ -137,9 +137,9 @@ class TPlinkPlugDevice extends Homey.Device {
         let settings = this.getSettings();
         let device = settings["settingIPAddress"];
         if (value) {
-            this.LedOn(device);
+            this.ledOn(device);
         } else {
-            this.LedOff(device);
+            this.ledOff(device);
         }
         // Then, emit a callback ( err, result )
         callback(null);
@@ -147,12 +147,12 @@ class TPlinkPlugDevice extends Homey.Device {
 
     onActionLedOn(device) {
         this.log("Action called: ledOn");
-        device.LedOn(device);
+        device.ledOn(device);
     }
 
     onActionLedOff(device) {
         this.log("Action called: ledOff");
-        device.LedOff(device);
+        device.ledOff(device);
     }
 
     // start functions
