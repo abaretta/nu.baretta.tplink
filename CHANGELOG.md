@@ -1,5 +1,8 @@
 # Changelog
 
+**Version 0.1.3**
+- Fixed typo in function name which caused the app to crash for some users on V2.
+
 **Version 0.1.2**
 - Bugfixes, 'dynamic' ip feature is now an option that can be enabled in the settings.
 - Changed to discovery process, now using some of the builtin options.
