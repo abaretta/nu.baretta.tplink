@@ -38,8 +38,6 @@ class TPlinkPlugDriver extends Homey.Driver {
             Object.values(apidevices).forEach(device => {
                 this.log("deviceId: " + device.getSettings().deviceId);
                 devIds[device.getSettings().deviceId] = "";
-                //this.log(device.plug._sysInfo.deviceId);
-                //devIds[device.plug._sysInfo.deviceId] = "";
             })
             this.log(devIds);
         } catch (err) {
