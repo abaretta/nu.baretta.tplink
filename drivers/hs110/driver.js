@@ -29,12 +29,13 @@ function guid() {
 
 class TPlinkPlugDriver extends Homey.Driver {
 
-    onPair(socket) {
+    async onPair(socket) {
         // socket is a direct channel to the front-end
         var devIds = {};
 
         try {
-            Object.values(this.getDevices()).forEach(device => {
+            let apidevices = await this.getDevices();
+            Object.values(apidevices).forEach(device => {
                 this.log("deviceId: " + device.getSettings().deviceId);
                 devIds[device.getSettings().deviceId] = "";
                 //this.log(device.plug._sysInfo.deviceId);

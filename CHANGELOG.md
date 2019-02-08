@@ -1,5 +1,8 @@
 # Changelog
 
+**Version 0.1.4**
+- Small code improvement for pairing.
+
 **Version 0.1.3**
 - Fixed typo in function name which caused the app to crash for some users on V2.
 
