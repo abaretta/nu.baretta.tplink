@@ -1,6 +1,7 @@
 {
         "id": "nu.baretta.tplink",
         "sdk": 2,
+        "brandColor": "#4ACBD6",
         "name": {
                 "en": "TP-Link Smart Devices",
                 "nl": "TP-Link Smart Home"

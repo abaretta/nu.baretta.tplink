@@ -51,7 +51,8 @@ class TPlinkPlugDevice extends Homey.Device {
         this.pollDevice(interval);
 
         this.registerCapabilityListener('onoff', this.onCapabilityOnoff.bind(this));
-        this.registerCapabilityListener('ledonoff', this.onCapabilityLedOnoff.bind(this));
+        // actually quite useless to have the 'ledonoff' function in the mobile interface...
+        // this.registerCapabilityListener('ledonoff', this.onCapabilityLedOnoff.bind(this));
 
         // flow conditions - default for "socket"
 

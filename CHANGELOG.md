@@ -2,6 +2,8 @@
 
 **Version 0.1.4**
 - Small code improvement for pairing.
+- Removed on/off function from mobile interface for plugs
+- Added the TP-Link brand color.
 
 **Version 0.1.3**
 - Fixed typo in function name which caused the app to crash for some users on V2.
