@@ -1,5 +1,9 @@
 # Changelog
 
+**Version 0.1.5**
+- Updated tplink-smarthome-api version and reduced the footprint of the app
+- Added energy estimation for bulbs
+
 **Version 0.1.4**
 - Small code improvement for pairing.
 - Removed on/off function from mobile interface for plugs
