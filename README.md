@@ -42,9 +42,3 @@ This app is based on the following resources:
 * https://github.com/DaveGut/TP-Link-Bulbs  
 
 Kudo's to Patrick Seal for the fantastic job on the TP Link smarthome API!
-
-Change log:
-
-**Version 0.1.5**
-- Updated tplink-smarthome-api version and reduced the footprint of the app
-- Added energy estimation for bulbs
