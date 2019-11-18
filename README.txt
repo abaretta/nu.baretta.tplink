@@ -32,7 +32,7 @@ Mobile capabilities:
 - Display power and energy usage (HS110/HS200)
 - Dim (LB100/LB110/LB120/LB130
 - Set light temperature (LB120/LB130)
-* Set hue (LB130)
+- Set hue (LB130)
 
 This app is based on the following resources:
 
