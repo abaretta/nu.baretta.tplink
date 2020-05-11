@@ -1,5 +1,8 @@
 # Changelog
 
+**Version 0.1.8**
+- Copied lb130 driver for other bulb devices
+
 **Version 0.1.7**
 - Updated tplink-smarthome-api version
 - Fixed LED on/off function ('nightmode') for plugs
