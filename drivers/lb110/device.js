@@ -80,8 +80,8 @@ class TPlinkBulbDevice extends Homey.Device {
 
         let circadianModeOn = new Homey.FlowCardAction('circadianModeOn');
         circadianModeOn
-            .register().registerRunListener((args, state) => {
-                let settings = this.getSettings();
+            .register().registerRunListener(async (args, state) => {
+                let settings = await args.device.getSettings();
                 let device = settings["settingIPAddress"];
                 this.log("Flow card action circadianModeOn ip: " + device);
                 this.circadianModeOn(device);
@@ -90,8 +90,8 @@ class TPlinkBulbDevice extends Homey.Device {
 
         let circadianModeOff = new Homey.FlowCardAction('circadianModeOff');
         circadianModeOff
-            .register().registerRunListener((args, state) => {
-                let settings = this.getSettings();
+            .register().registerRunListener(async (args, state) => {
+                let settings = await args.device.getSettings();
                 let device = settings["settingIPAddress"];
                 this.log("Flow card action circadianModeOff ip: " + device);
                 this.circadianModeOff(device);
@@ -100,9 +100,9 @@ class TPlinkBulbDevice extends Homey.Device {
 
         let transitionOn = new Homey.FlowCardAction('transitionOn');
         transitionOn
-            .register().registerRunListener((args, state) => {
+            .register().registerRunListener(async (args, state) => {
                 var transition = args.transition * 1000;
-                let settings = this.getSettings();
+                let settings = await args.device.getSettings();
                 let device = settings["settingIPAddress"];
                 this.log("Flow card action transitionOn ip: " + device);
                 this.onTransition(device, transition);
@@ -111,9 +111,9 @@ class TPlinkBulbDevice extends Homey.Device {
 
         let transitionOff = new Homey.FlowCardAction('transitionOff');
         transitionOff
-            .register().registerRunListener((args, state) => {
+            .register().registerRunListener(async (args, state) => {
                 var transition = args.transition * 1000;
-                let settings = this.getSettings();
+                let settings = await args.device.getSettings();
                 let device = settings["settingIPAddress"];
                 this.log("Flow card action transitionOff ip: " + device);
                 this.offTransition(device, transition);
@@ -123,8 +123,8 @@ class TPlinkBulbDevice extends Homey.Device {
         /*
         let meterResetAction = new Homey.FlowCardAction('meter_reset');
         meterResetAction
-            .register().registerRunListener((args, state) => {
-                let settings = this.getSettings();
+            .register().registerRunListener(async (args, state) => {
+                let settings = await args.device.getSettings();
                 let device = settings["settingIPAddress"];
                 let totalOffset = settings["totalOffset"];
                 this.log("Flow card reset meter");
@@ -134,7 +134,7 @@ class TPlinkBulbDevice extends Homey.Device {
 
         let undoMeterResetAction = new Homey.FlowCardAction('undo_meter_reset');
         undoMeterResetAction
-            .register().registerRunListener((args, state) => {
+            .register().registerRunListener(async (args, state) => {
                 let settings = this.getSettings();
                 let device = settings["settingIPAddress"];
                 this.log("Flow card undo reset meter");
@@ -483,7 +483,7 @@ class TPlinkBulbDevice extends Homey.Device {
         let device = settings.settingIPAddress;
         let deviceId = settings.deviceId;
         this.log("getStatus device: " + device);
-        this.log("DeviceId device: " + deviceId);
+        //this.log("DeviceId device: " + deviceId);
 
         try {
             this.bulb = await client.getBulb({
