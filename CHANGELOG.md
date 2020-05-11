@@ -1,5 +1,13 @@
 # Changelog
 
+**Version 0.1.7**
+- Updated tplink-smarthome-api version
+- Fixed LED on/off function ('nightmode') for plugs
+- Properly removed LED on/off switch from mobile interface
+
+**Version 0.1.6**
+- Version bump due to silly app submission process caused by app-store overhaul
+
 **Version 0.1.5**
 - Updated tplink-smarthome-api version and reduced the footprint of the app
 - Added energy estimation for bulbs
