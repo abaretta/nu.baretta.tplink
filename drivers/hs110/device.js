@@ -375,8 +375,8 @@ class TPlinkPlugDevice extends Homey.Device {
         client.startDiscovery();
         client.on('plug-new', (plug) => {
             this.log("Settings deviceId: " + settings["deviceId"]);
-            this.log("Host: " + plug.host + " deviceId: " + plug._sysInfo.deviceId);
-            if (plug._sysInfo.deviceId == settings["deviceId"]) {
+            this.log("Host: " + plug.host + " deviceId: " + plug.deviceId);
+            if (plug.deviceId == settings["deviceId"]) {
                 this.setSettings({
                     settingIPAddress: plug.host
                 }).catch(this.error);
@@ -392,8 +392,8 @@ class TPlinkPlugDevice extends Homey.Device {
         })
         client.on('plug-online', (plug) => {
             this.log("Settings deviceId: " + settings["deviceId"]);
-            this.log("Host: " + plug.host + " deviceId: " + plug._sysInfo.deviceId);
-            if (plug._sysInfo.deviceId == settings["deviceId"]) {
+            this.log("Host: " + plug.host + " deviceId: " + plug.deviceId);
+            if (plug.deviceId == settings["deviceId"]) {
                 this.setSettings({
                     settingIPAddress: plug.host
                 }).catch(this.error);

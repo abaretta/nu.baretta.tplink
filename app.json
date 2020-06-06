@@ -10,7 +10,7 @@
                 "en": ["light", "socket", "switch", "plug", "bulb", "energy monitoring", "HS100", "HS105", "HS110", "HS200", "LB100", "LB110", "LB120", "LB130", "LB200", "LB230", "tplink"],
                 "nl": ["lamp", "licht", "schakelaar", "energie monitoring", "HS100", "HS105", "HS110", "HS200", "LB100", "LB110", "LB120", "LB130", "LB200", "LB230", "tplink"]
         },
-        "version": "0.1.8",
+        "version": "0.1.9",
         "compatibility": ">=4.2.0",
         "author": {
                 "name": "Anne Baretta",
