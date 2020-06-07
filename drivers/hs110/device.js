@@ -371,8 +371,13 @@ class TPlinkPlugDevice extends Homey.Device {
     discover() {
         // TODO: rewrite with API's discovery options (timeout, excluded MAC addresses, interval)
         let settings = this.getSettings();
+        var discoveryOptions = {
+            deviceTypes: 'plug',
+            discoveryInterval: 5000,
+            discoveryTimeout: 6000
+        }
         // discover new plugs
-        client.startDiscovery();
+        client.startDiscovery(discoveryOptions);
         client.on('plug-new', (plug) => {
             this.log("Settings deviceId: " + settings["deviceId"]);
             this.log("Host: " + plug.host + " deviceId: " + plug.deviceId);

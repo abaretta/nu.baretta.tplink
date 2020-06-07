@@ -611,6 +611,11 @@ class TPlinkBulbDevice extends Homey.Device {
     discover() {
         // TODO: rewrite with API's discovery options (timeout, excluded MAC addresses, interval)
         let settings = this.getSettings();
+        var discoveryOptions = {
+            deviceTypes: 'bulb',
+            discoveryInterval: 5000,
+            discoveryTimeout: 6000
+        }
         // discover new bulbs
         client.startDiscovery();
         client.on('bulb-new', (bulb) => {
