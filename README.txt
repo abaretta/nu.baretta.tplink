@@ -1,5 +1,3 @@
-TP-Link Smart Plug and Bulb (WIFI) app for Athom Homey
-
 This app lets you control TP-Link Smart Plugs HS100 (plug with no energy monitoring) HS110 (plug with energy monitoring) and Smart Bulbs LB100, LB110, LB120 and LB130 from within flows and the (mobile) app. The HS200 Smart Switch is as of yet untested but should work as well (please let me know ;-) 
 
 Support for several other devices such as the HS115 mini plug and LB200 and LB230 bulbs can be added with little effort, let me know if you have one of these devices.
