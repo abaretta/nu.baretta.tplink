@@ -1,4 +1,4 @@
-This app lets you control TP-Link Smart Plugs HS100 (plug with no energy monitoring) HS110 (plug with energy monitoring) and Smart Bulbs LB100, LB110, LB120 and LB130 from within flows and the (mobile) app. The HS200 Smart Switch is as of yet untested but should work as well (please let me know ;-) 
+This app lets you control TP-Link Smart Plugs HS100 (plug with no energy monitoring) HS110 (plug with energy monitoring) and Smart Bulbs LB100/110/120 and LB130 as well as the KL50/60/110/120/130 from within flows and the (mobile) app. The HS200 Smart Switch is as of yet untested but should work as well (please let me know ;-) 
 
 Support for several other devices such as the HS115 mini plug and LB200 and LB230 bulbs can be added with little effort, let me know if you have one of these devices.
 
@@ -9,7 +9,7 @@ Supported flow triggers:
 
 - Power / total power changed (HS110/HS200)
 - On / off state changed
-- Dim level changed (LB100/LB110/LB120/LB130)
+- Dim level changed (all bulbs)
 
 Supported flow conditions:
 
@@ -21,16 +21,16 @@ Supported flow actions:
 - Toggle on / off
 - Switch LED on / off ('nightmode', HS100/HS110)
 - reset power meter / undo reset power meter (HS110/HS200)
-- Transition on / off ('wake-up light', LB100/LB110/LB120/LB130)
-- Select mode ('circadian' or 'normal', LB120/LB130) 
+- Transition on / off ('wake-up light', LB100/LB110/LB120/LB130/KL50/KL60/KL110/KL120/KL130)
+- Select mode ('circadian' or 'normal', LB120/LB130/KL120/KL130) 
 
 Mobile capabilities:
 
 - On/off
 - Display power and energy usage (HS110/HS200)
 - Dim (LB100/LB110/LB120/LB130
-- Set light temperature (LB120/LB130)
-- Set hue (LB130)
+- Set light temperature (LB120/LB130/KL120/KL130)
+- Set hue (LB130/KL130)
 
 This app is based on the following resources:
 
