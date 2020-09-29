@@ -26,7 +26,7 @@ function getDriverName() {
 
 var TPlinkModel = getDriverName().toUpperCase();
 
-// Kelvin (LB120:2700-6500 LB130:2500-9000)
+// Kelvin (LB/KL120:2700-6500 LB/KL130:2500-9000)
 if ((TPlinkModel == "LB120") || (TPlinkModel == "KL120")) {
     var kelvinLow = 2700;
     var kelvinHigh = 6500
@@ -518,8 +518,8 @@ class TPlinkBulbDevice extends Homey.Device {
                         this.setCapabilityValue('onoff', true)
                             .catch(this.error);
 
-                        // bulbState mode: circadian or normal. Only for LB130 and LB120
-                        if ((TPlinkModel == "LB130") || (TPlinkModel == "LB120") || (TPlinkModel == "KL130") || (TPlinkModel == "KL120") ) {
+                        // bulbState mode: circadian or normal. Only for LB130/120 and KL130/120
+                        if ((TPlinkModel == "LB130") || (TPlinkModel == "LB120") || (TPlinkModel == "KL130") || (TPlinkModel == "KL120")) {
                             if (bulbState.mode == "normal") {
                                 this.log('Bulb state: normal');
                             } else
@@ -577,7 +577,8 @@ class TPlinkBulbDevice extends Homey.Device {
                         unreachableCount += 1;
                         this.log("Device unreachable. Unreachable count: " + unreachableCount + " Discover count: " + discoverCount + " DynamicIP option: " + settings["dynamicIp"]);
 
-                        if ((unreachableCount >= 3) && settings["dynamicIp"] && (discoverCount < 10)) {
+                        // attempt autodiscovery once every hour
+                        if ((unreachableCount % 360 == 3) && settings["dynamicIp"]) {
                             this.setUnavailable("Device offline");
                             discoverCount += 1;
                             this.log("Unreachable, starting autodiscovery");
@@ -613,11 +614,12 @@ class TPlinkBulbDevice extends Homey.Device {
         let settings = this.getSettings();
         var discoveryOptions = {
             deviceTypes: 'bulb',
-            discoveryInterval: 5000,
-            discoveryTimeout: 6000
+            discoveryInterval: 10000,
+            discoveryTimeout: 5000,
+            offlineTolerance: 3
         }
         // discover new bulbs
-        client.startDiscovery();
+        client.startDiscovery(discoveryOptions);
         client.on('bulb-new', (bulb) => {
             if (bulb.deviceId == settings["deviceId"]) {
                 this.setSettings({

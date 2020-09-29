@@ -340,7 +340,8 @@ class TPlinkPlugDevice extends Homey.Device {
                         unreachableCount += 1;
                         this.log("Device unreachable. Unreachable count: " + unreachableCount + " Discover count: " + discoverCount + " DynamicIP option: " + settings["dynamicIp"]);
 
-                        if ((unreachableCount >= 3) && settings["dynamicIp"] && (discoverCount < 10)) {
+                        // attempt autodiscovery once every hour
+                        if ((unreachableCount % 360 == 3) && settings["dynamicIp"]) {
                             this.setUnavailable("Device offline");
                             discoverCount += 1;
                             this.log("Unreachable, starting autodiscovery");
@@ -373,8 +374,9 @@ class TPlinkPlugDevice extends Homey.Device {
         let settings = this.getSettings();
         var discoveryOptions = {
             deviceTypes: 'plug',
-            discoveryInterval: 5000,
-            discoveryTimeout: 6000
+            discoveryInterval: 10000,
+            discoveryTimeout: 5000,
+            offlineTolerance: 3
         }
         // discover new plugs
         client.startDiscovery(discoveryOptions);
@@ -413,8 +415,6 @@ class TPlinkPlugDevice extends Homey.Device {
             }
         })
     }
-
-
 }
 
 module.exports = TPlinkPlugDevice;
